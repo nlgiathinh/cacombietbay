@@ -1,33 +1,21 @@
 const API_URL = '/api';
 
-const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
-const supabaseClient = typeof supabase !== 'undefined'
-    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    : null;
+async function uploadCoverFileToServer(file) {
+    const formData = new FormData();
+    formData.append('cover', file);
 
-function _normalizeFileName(filename) {
-    return filename.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '');
-}
-
-async function uploadImageToSupabase(file) {
-    if (!supabaseClient) {
-        alert('Supabase chưa được cấu hình. Vui lòng cập nhật SUPABASE_URL và SUPABASE_ANON_KEY.');
-        throw new Error('Supabase client not available');
-    }
-    const fileName = `${Date.now()}-${_normalizeFileName(file.name)}`;
-    const { data, error } = await supabaseClient.storage.from('covers').upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
+    const response = await fetch(`${API_URL}/upload-cover`, {
+        method: 'POST',
+        body: formData
     });
-    if (error) {
-        throw error;
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => null);
+        throw new Error(error?.error || 'Upload thất bại');
     }
-    const { data: publicData, error: publicError } = supabaseClient.storage.from('covers').getPublicUrl(fileName);
-    if (publicError) {
-        throw publicError;
-    }
-    return publicData.publicUrl;
+
+    const result = await response.json();
+    return result.public_url;
 }
 
 async function uploadStoryCoverFile() {
@@ -36,8 +24,9 @@ async function uploadStoryCoverFile() {
         alert('Vui lòng chọn file ảnh bìa để upload.');
         return;
     }
+
     try {
-        const url = await uploadImageToSupabase(input.files[0]);
+        const url = await uploadCoverFileToServer(input.files[0]);
         document.getElementById('story-cover-url').value = url;
         alert('Upload bìa lên Supabase thành công!');
     } catch (err) {
@@ -52,8 +41,9 @@ async function uploadEditStoryCoverFile() {
         alert('Vui lòng chọn file ảnh bìa để upload.');
         return;
     }
+
     try {
-        const url = await uploadImageToSupabase(input.files[0]);
+        const url = await uploadCoverFileToServer(input.files[0]);
         document.getElementById('edit-story-cover').value = url;
         document.getElementById('edit-cover-preview').src = url;
         document.getElementById('edit-cover-preview').style.display = 'block';

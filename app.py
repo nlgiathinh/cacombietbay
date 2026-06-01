@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
+import time
+import requests
 from werkzeug.utils import secure_filename
 from database import (
     get_stories as db_get_stories,
@@ -46,6 +48,49 @@ def _get_request_data():
     if request.is_json:
         return request.get_json(silent=True) or {}
     return request.form
+
+
+def _upload_cover_file_to_supabase(file):
+    supabase_url = os.getenv('SUPABASE_URL')
+    supabase_key = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
+    if not supabase_url or not supabase_key:
+        raise RuntimeError('Supabase service key or URL not configured on server.')
+
+    file_name = secure_filename(file.filename)
+    if not file_name:
+        raise ValueError('Invalid file name')
+
+    file_name = f"{int(time.time())}-{file_name}"
+    upload_url = f"{supabase_url}/storage/v1/object/covers/{file_name}"
+
+    headers = {
+        'apikey': supabase_key,
+        'Authorization': f'Bearer {supabase_key}',
+        'x-upsert': 'true',
+        'Content-Type': file.content_type or 'application/octet-stream'
+    }
+    file_data = file.read()
+    response = requests.post(upload_url, headers=headers, data=file_data)
+    if response.status_code not in (200, 201):
+        raise RuntimeError(f'Supabase upload failed: {response.status_code} {response.text}')
+
+    return f"{supabase_url}/storage/v1/object/public/covers/{file_name}"
+
+
+@app.route('/api/upload-cover', methods=['POST'])
+def upload_cover():
+    if 'cover' not in request.files:
+        return jsonify({'error': 'No cover file provided'}), 400
+
+    file = request.files['cover']
+    if file.filename == '':
+        return jsonify({'error': 'No cover file selected'}), 400
+
+    try:
+        public_url = _upload_cover_file_to_supabase(file)
+        return jsonify({'public_url': public_url}), 200
+    except Exception as exc:
+        return jsonify({'error': str(exc)}), 500
 
 
 @app.route('/api/stories', methods=['POST'])

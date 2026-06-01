@@ -64,6 +64,8 @@ create table chapters (
 3. Mở quyền public cho bucket hoặc cấu hình URL public để ứng dụng có thể lấy ảnh bìa trực tiếp.
 4. Trong trang admin, bạn có thể chọn ảnh và upload trực tiếp lên bucket `covers`, sau đó ứng dụng sẽ lưu URL trả về vào `cover_path`.
 
+> Lưu ý: upload ảnh bìa hiện được xử lý trên server Flask bằng `SUPABASE_URL` và `SUPABASE_SERVICE_ROLE_KEY`, nên bạn không cần cung cấp `SUPABASE_ANON_KEY` cho frontend admin.
+
 ### Lưu ý về SQLite trên môi trường serverless
 - Nếu bạn chạy app trong môi trường serverless như Vercel, thư mục chứa mã nguồn có thể ở chế độ read-only.
 - Ứng dụng hiện đã cố gắng tự động dùng `DATABASE_PATH` hoặc thư mục tạm của hệ thống nếu thư mục gốc không ghi được.
