@@ -270,9 +270,18 @@ async function handleAddChapter(event) {
     event.preventDefault();
     
     const storyId = document.getElementById('select-story').value;
+    const chapterNumber = parseInt(document.getElementById('chap-number').value, 10);
+    if (!storyId) {
+        alert('Vui lòng chọn truyện trước khi thêm chương.');
+        return;
+    }
+    if (isNaN(chapterNumber) || chapterNumber < 1) {
+        alert('Vui lòng nhập số chương hợp lệ.');
+        return;
+    }
+
     const formData = new FormData();
     const title = document.getElementById('chap-title').value;
-    const chapterNumber = parseInt(document.getElementById('chap-number').value, 10) || 1;
     
     formData.append('chapter_number', chapterNumber);
     formData.append('title', title);
@@ -309,10 +318,14 @@ async function handleEditChapter(event) {
     event.preventDefault();
     
     const chapterId = document.getElementById('edit-chapter-id').value;
+    const chapterNumber = parseInt(document.getElementById('edit-chapter-number').value, 10);
+    if (isNaN(chapterNumber) || chapterNumber < 1) {
+        alert('Vui lòng nhập số chương hợp lệ.');
+        return;
+    }
     const formData = new FormData();
     
     const title = document.getElementById('edit-chapter-title').value;
-    const chapterNumber = parseInt(document.getElementById('edit-chapter-number').value, 10) || 1;
     
     formData.append('chapter_number', chapterNumber);
     formData.append('title', title);

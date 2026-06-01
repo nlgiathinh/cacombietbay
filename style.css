@@ -92,12 +92,16 @@ header {
     padding: 15px; cursor: pointer; text-align: center; transition: transform 0.3s, box-shadow 0.3s;
 }
 .book-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px var(--ui-border); }
-.book-card img { width: 100%; height: 280px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; }
+.book-card .cover-wrapper { width: 100%; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 12px; background: #f5f5f5; margin-bottom: 15px; }
+.book-card .cover-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.book-card img { width: 100%; height: auto; border-radius: 12px; margin-bottom: 15px; }
 .book-card h3 { font-size: 1.1rem; color: var(--accent-color); font-weight: 700; margin-bottom: 5px; }
 .book-card p { font-size: 0.9rem; opacity: 0.8; }
 
 /* Metadata truyện */
 .story-meta { display: flex; gap: 30px; margin-bottom: 40px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--ui-border); }
+.story-meta .cover-wrapper { width: 220px; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); background: #f5f5f5; flex-shrink: 0; }
+.story-meta .cover-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .story-meta img { width: 220px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
 .meta-info h1 { font-size: 2.2rem; color: var(--accent-color); margin-bottom: 10px; font-weight: 800;}
 .chapter-list { display: flex; flex-direction: column; gap: 10px; }

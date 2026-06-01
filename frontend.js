@@ -18,6 +18,7 @@ const API_URL = '/api';
 let db = [];
 let currentStoryId = null;
 let currentChapterIdx = 0;
+let currentStoryChapters = [];
 let currentFontSize = 1.2;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -76,7 +77,7 @@ function showHome() {
 
             grid.innerHTML += `
                 <div class="book-card" onclick="showStory('${story.id}')">
-                    <img src="${story.cover}" alt="Bìa truyện">
+                    <div class="cover-wrapper"><img src="${story.cover}" alt="Bìa truyện"></div>
                     <h3>${story.title}</h3>
                     <p>Tác giả: ${story.author}</p>
                     <p style="margin-top:6px; font-size:0.85rem; color: var(--text-color); opacity:0.85">
@@ -94,10 +95,12 @@ function showStory(storyId) {
     currentStoryId = storyId;
     
     const story = db.find(s => s.id === storyId);
+    const sortedChapters = story.chapters.slice().sort((a, b) => Number(a.chapter_number) - Number(b.chapter_number));
+    currentStoryChapters = sortedChapters;
     
     // Render Metadata
     document.getElementById('story-meta-container').innerHTML = `
-        <img src="${story.cover}" alt="Cover">
+        <div class="cover-wrapper"><img src="${story.cover}" alt="Cover"></div>
         <div class="meta-info">
             <h1>${story.title}</h1>
             <p><strong>Tác giả:</strong> ${story.author}</p>
@@ -108,7 +111,7 @@ function showStory(storyId) {
     // Render Chapters
     const chapList = document.getElementById('chapter-list-container');
     chapList.innerHTML = '';
-    story.chapters.forEach((chap, idx) => {
+    currentStoryChapters.forEach((chap, idx) => {
         chapList.innerHTML += `
             <div class="chap-item" onclick="readChapter(${idx})">
                 <span>${chap.title}</span>
@@ -124,7 +127,7 @@ function readChapter(idx) {
     currentChapterIdx = idx;
     
     const story = db.find(s => s.id === currentStoryId);
-    const chapter = story.chapters[idx];
+    const chapter = currentStoryChapters[idx];
 
     document.getElementById('reading-title').innerText = chapter.title;
 
@@ -146,7 +149,7 @@ function readChapter(idx) {
     }
 
     document.getElementById('btn-prev').disabled = (idx === 0);
-    document.getElementById('btn-next').disabled = (idx === story.chapters.length - 1);
+    document.getElementById('btn-next').disabled = (idx === currentStoryChapters.length - 1);
 }
 
 function changeChapter(step) {
