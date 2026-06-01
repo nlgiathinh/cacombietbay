@@ -4,7 +4,7 @@ const defaultData = [
         id: "truyen_1",
         title: "Ký Sự Biển Xanh",
         author: "Cá Cơm Mộng Mơ",
-        cover_path: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=500&q=80",
+        cover_path: "samplecover.png",
         description: "Một câu chuyện nhẹ nhàng về những chuyến bay vượt đại dương của chú cá nhỏ mang theo nhiều ước mơ...",
         status: "ongoing",
         chapters: [

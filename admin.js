@@ -245,17 +245,10 @@ function displayChapters(filterStoryId = '') {
     sorted.forEach(chapter => {
         const card = document.createElement('div');
         card.className = 'item-card';
-        // Show chapter title without the ordinal prefix. The chapter number is
-        // used only for sorting; avoid displaying "Chương N:" in the UI.
+        // Only render the chapter title text itself. Do not add or prepend
+        // any ordinal label in the admin list.
         const rawTitle = chapter.title ? chapter.title.trim() : '';
-        let displayTitle = '';
-        if (rawTitle) {
-            // Strip leading "Chương <number>" and any separator like ':' or '-'
-            displayTitle = rawTitle.replace(/^\s*chương\s*\d+\s*(?:[:\-–—]\s*)?/i, '').trim();
-            if (!displayTitle) displayTitle = 'Chương';
-        } else {
-            displayTitle = 'Chương';
-        }
+        const displayTitle = rawTitle.replace(/^\s*chương\s*\d+\s*(?:[:\-–—]\s*)?/i, '').trim() || 'Chương';
         card.innerHTML = `
             <div class="item-info">
                 <h4>${displayTitle}</h4>
