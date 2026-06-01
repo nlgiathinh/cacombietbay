@@ -248,7 +248,7 @@ function displayChapters(filterStoryId = '') {
         // Only render the chapter title text itself. Do not add or prepend
         // any ordinal label in the admin list.
         const rawTitle = chapter.title ? chapter.title.trim() : '';
-        const displayTitle = rawTitle.replace(/^\s*chương\s*\d+\s*(?:[:\-–—]\s*)?/i, '').trim() || 'Chương';
+        const displayTitle = rawTitle;
         card.innerHTML = `
             <div class="item-info">
                 <h4>${displayTitle}</h4>

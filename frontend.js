@@ -2,7 +2,7 @@
 const defaultData = [
     {
         id: "truyen_1",
-        title: "Ký Sự Biển Xanh",
+        title: "Nghê Thường Trướng Noãn",
         author: "Cá Cơm Mộng Mơ",
         cover_path: "samplecover.png",
         description: "Một câu chuyện nhẹ nhàng về những chuyến bay vượt đại dương của chú cá nhỏ mang theo nhiều ước mơ...",
@@ -102,12 +102,12 @@ function showHome() {
             grid.innerHTML += `
                 <div class="book-card" onclick="showStory('${story.id}')">
                     <div class="cover-wrapper">${buildCoverImgHtml(story.cover, 'thumb')}</div>
-                    <h3>${story.title}</h3>
+                    <h3 class="story-card-title">${story.title}</h3>
                     <p>Tác giả: ${story.author}</p>
                     <p style="margin-top:6px; font-size:0.85rem; color: var(--text-color); opacity:0.85">
-                        Trạng thái: <strong style="color: var(--accent-color);">${statusText}</strong>
+                        <strong style="color: var(--accent-color);">${statusText}</strong>
                     </p>
-                    <p style="margin-top:8px; font-size:0.8rem; color: var(--accent-color)">${story.chapters.length} Chương</p>
+                    <p style="margin-top:8px; font-size:0.8rem; color: var(--accent-color)">${story.chapters.length} chương</p>
                 </div>
             `;
         });
@@ -126,7 +126,7 @@ function showStory(storyId) {
     document.getElementById('story-meta-container').innerHTML = `
         <div class="cover-wrapper">${buildCoverImgHtml(story.cover, 'meta')}</div>
         <div class="meta-info">
-            <h1>${story.title}</h1>
+            <h1 class="story-title">${story.title}</h1>
             <p><strong>Tác giả:</strong> ${story.author}</p>
             <p style="margin-top: 15px; opacity: 0.8;">${story.description}</p>
         </div>
