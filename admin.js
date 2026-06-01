@@ -230,13 +230,19 @@ function displayChapters(filterStoryId = '') {
     list.innerHTML = '';
     
     const filtered = filterStoryId ? chaptersData.filter(c => c.story_id == filterStoryId) : chaptersData;
+    const sorted = filtered.slice().sort((a, b) => {
+        if (a.story_id !== b.story_id) {
+            return a.storyTitle.localeCompare(b.storyTitle);
+        }
+        return Number(a.chapter_number) - Number(b.chapter_number);
+    });
     
-    if (filtered.length === 0) {
+    if (sorted.length === 0) {
         list.innerHTML = '<div class="empty-state"><i class="bx bx-file"></i><p>Chưa có chương nào.</p></div>';
         return;
     }
     
-    filtered.forEach(chapter => {
+    sorted.forEach(chapter => {
         const card = document.createElement('div');
         card.className = 'item-card';
         card.innerHTML = `
@@ -245,6 +251,8 @@ function displayChapters(filterStoryId = '') {
                 <p>Truyện: ${chapter.storyTitle}</p>
             </div>
             <div class="item-actions">
+                <button class="btn-action btn-move" onclick="moveChapterOrder(${chapter.id}, 'up')">▲</button>
+                <button class="btn-action btn-move" onclick="moveChapterOrder(${chapter.id}, 'down')">▼</button>
                 <button class="btn-action btn-edit" onclick="openEditChapter(${chapter.id})">Sửa</button>
                 <button class="btn-action btn-delete" onclick="deleteChapter(${chapter.id})">Xóa</button>
             </div>
@@ -263,11 +271,8 @@ async function handleAddChapter(event) {
     
     const storyId = document.getElementById('select-story').value;
     const formData = new FormData();
-    
-    // Extract chapter number from title if present
     const title = document.getElementById('chap-title').value;
-    const chapterMatch = title.match(/Chương\s+(\d+)/i);
-    const chapterNumber = chapterMatch ? chapterMatch[1] : '1';
+    const chapterNumber = parseInt(document.getElementById('chap-number').value, 10) || 1;
     
     formData.append('chapter_number', chapterNumber);
     formData.append('title', title);
@@ -293,6 +298,7 @@ function openEditChapter(chapterId) {
     
     document.getElementById('edit-chapter-id').value = chapter.id;
     document.getElementById('edit-chapter-story-id').value = chapter.story_id;
+    document.getElementById('edit-chapter-number').value = chapter.chapter_number || 1;
     document.getElementById('edit-chapter-title').value = chapter.title || '';
     document.getElementById('edit-chapter-content').value = chapter.content || '';
     
@@ -306,8 +312,7 @@ async function handleEditChapter(event) {
     const formData = new FormData();
     
     const title = document.getElementById('edit-chapter-title').value;
-    const chapterMatch = title.match(/Chương\s+(\d+)/i);
-    const chapterNumber = chapterMatch ? chapterMatch[1] : '1';
+    const chapterNumber = parseInt(document.getElementById('edit-chapter-number').value, 10) || 1;
     
     formData.append('chapter_number', chapterNumber);
     formData.append('title', title);
@@ -340,6 +345,51 @@ async function deleteChapter(chapterId) {
     } else {
         alert('Có lỗi xảy ra khi xóa chương!');
     }
+}
+
+async function updateChapterNumber(chapterId, chapterNumber, title, content) {
+    const formData = new FormData();
+    formData.append('chapter_number', chapterNumber);
+    formData.append('title', title);
+    formData.append('content', content);
+
+    const response = await fetch(`${API_URL}/chapters/${chapterId}`, {
+        method: 'PUT',
+        body: formData
+    });
+    return response.ok;
+}
+
+async function moveChapterOrder(chapterId, direction) {
+    const chapter = chaptersData.find(c => c.id === chapterId);
+    if (!chapter) return;
+
+    const sameStoryChapters = chaptersData
+        .filter(c => c.story_id === chapter.story_id)
+        .slice()
+        .sort((a, b) => Number(a.chapter_number) - Number(b.chapter_number));
+
+    const currentIndex = sameStoryChapters.findIndex(c => c.id === chapterId);
+    const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= sameStoryChapters.length) return;
+
+    const targetChapter = sameStoryChapters[targetIndex];
+    const currentNumber = Number(chapter.chapter_number);
+    const targetNumber = Number(targetChapter.chapter_number);
+
+    const updatedCurrent = await updateChapterNumber(chapterId, targetNumber, chapter.title, chapter.content);
+    if (!updatedCurrent) {
+        alert('Không thể đổi vị trí chương. Vui lòng thử lại.');
+        return;
+    }
+
+    const updatedTarget = await updateChapterNumber(targetChapter.id, currentNumber, targetChapter.title, targetChapter.content);
+    if (!updatedTarget) {
+        alert('Có lỗi khi cập nhật chương đối ứng. Tải lại trang để kiểm tra lại.');
+        return;
+    }
+
+    loadAllChapters();
 }
 
 // --- Modal Management ---

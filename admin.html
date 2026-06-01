@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Cá Cơm Biết Bay - Admin Quản lý</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
@@ -82,6 +83,8 @@
         .btn-edit:hover { opacity: 0.8; }
         .btn-delete { background: #F44336; color: white; }
         .btn-delete:hover { opacity: 0.8; }
+        .btn-move { background: #2196F3; color: white; }
+        .btn-move:hover { opacity: 0.8; }
         
         /* Modal for editing */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
@@ -197,6 +200,10 @@
                             <option value="">-- Chọn truyện --</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Số thứ tự chương:</label>
+                        <input type="number" id="chap-number" min="1" placeholder="VD: 1" required>
+                    </div>
                     
                     <div class="form-group">
                         <label>Tên Chương:</label>
@@ -286,6 +293,10 @@
             <form id="form-edit-chapter" onsubmit="handleEditChapter(event)">
                 <input type="hidden" id="edit-chapter-id">
                 <input type="hidden" id="edit-chapter-story-id">
+                <div class="form-group">
+                    <label>Số thứ tự chương:</label>
+                    <input type="number" id="edit-chapter-number" min="1" required>
+                </div>
                 <div class="form-group">
                     <label>Tên Chương:</label>
                     <input type="text" id="edit-chapter-title" required>
