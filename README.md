@@ -60,9 +60,10 @@ create table chapters (
 
 ### Cấu hình Supabase Storage
 1. Vào Supabase dashboard, chọn `Storage`.
-2. Tạo bucket mới tên `covers`.
+2. Tạo bucket mới tên `covers` (hoặc tên bạn muốn).
 3. Mở quyền public cho bucket hoặc cấu hình URL public để ứng dụng có thể lấy ảnh bìa trực tiếp.
-4. Trong trang admin, bạn có thể chọn ảnh và upload trực tiếp lên bucket `covers`, sau đó ứng dụng sẽ lưu URL trả về vào `cover_path`.
+4. Trong Vercel, thêm biến môi trường `SUPABASE_STORAGE_BUCKET` bằng tên bucket bạn tạo.
+5. Trong trang admin, bạn có thể chọn ảnh và upload trực tiếp lên bucket, sau đó ứng dụng sẽ lưu URL trả về vào `cover_path`.
 
 > Lưu ý: upload ảnh bìa hiện được xử lý trên server Flask bằng `SUPABASE_URL` và `SUPABASE_SERVICE_ROLE_KEY`, nên bạn không cần cung cấp `SUPABASE_ANON_KEY` cho frontend admin.
 

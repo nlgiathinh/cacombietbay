@@ -53,6 +53,7 @@ def _get_request_data():
 def _upload_cover_file_to_supabase(file):
     supabase_url = os.getenv('SUPABASE_URL')
     supabase_key = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
+    bucket_name = os.getenv('SUPABASE_STORAGE_BUCKET', 'covers')
     if not supabase_url or not supabase_key:
         raise RuntimeError('Supabase service key or URL not configured on server.')
 
@@ -61,7 +62,7 @@ def _upload_cover_file_to_supabase(file):
         raise ValueError('Invalid file name')
 
     file_name = f"{int(time.time())}-{file_name}"
-    upload_url = f"{supabase_url}/storage/v1/object/covers/{file_name}"
+    upload_url = f"{supabase_url}/storage/v1/object/{bucket_name}/{file_name}"
 
     headers = {
         'apikey': supabase_key,
@@ -72,9 +73,14 @@ def _upload_cover_file_to_supabase(file):
     file_data = file.read()
     response = requests.post(upload_url, headers=headers, data=file_data)
     if response.status_code not in (200, 201):
+        if response.status_code == 404:
+            raise RuntimeError(
+                f'Supabase upload failed: Bucket "{bucket_name}" not found. '
+                'Hãy kiểm tra tên bucket trong SUPABASE_STORAGE_BUCKET và chắc chắn bucket này đã được tạo trên Supabase.'
+            )
         raise RuntimeError(f'Supabase upload failed: {response.status_code} {response.text}')
 
-    return f"{supabase_url}/storage/v1/object/public/covers/{file_name}"
+    return f"{supabase_url}/storage/v1/object/public/{bucket_name}/{file_name}"
 
 
 @app.route('/api/upload-cover', methods=['POST'])
