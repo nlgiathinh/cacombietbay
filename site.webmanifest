@@ -1,0 +1,21 @@
+{
+  "name": "Cá Cơm Biết Bay",
+  "short_name": "Cá Cơm",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#EAF8FF",
+  "theme_color": "#EAF8FF",
+  "description": "Một trang truyện cho phép đọc và quản lý chương truyện.",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 72x72 96x96 128x128 256x256",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

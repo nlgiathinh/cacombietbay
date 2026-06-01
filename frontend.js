@@ -21,6 +21,30 @@ let currentChapterIdx = 0;
 let currentStoryChapters = [];
 let currentFontSize = 1.2;
 
+// Helper: build a slightly more responsive thumbnail image. For known
+// providers (e.g. Unsplash) we provide a srcset; always enable lazy loading
+// and async decoding to reduce perceived pixelation and improve loading.
+function buildCoverImgHtml(coverUrl, role = 'thumb') {
+    const attrs = `loading="lazy" decoding="async"`;
+    let srcset = '';
+    try {
+        if (/images\.unsplash\.com/i.test(coverUrl)) {
+            const base = coverUrl.split('?')[0];
+            const s500 = `${base}?w=500&q=80&auto=format`;
+            const s1000 = `${base}?w=1000&q=80&auto=format`;
+            srcset = `${s500} 500w, ${s1000} 1000w`;
+        }
+    } catch (e) {
+        srcset = '';
+    }
+
+    if (srcset) {
+        const sizes = role === 'thumb' ? `(max-width:600px) 50vw, 250px` : `(max-width:800px) 50vw, 440px`;
+        return `<img src="${coverUrl}" srcset="${srcset}" sizes="${sizes}" alt="Bìa truyện" ${attrs}>`;
+    }
+    return `<img src="${coverUrl}" alt="Bìa truyện" ${attrs}>`;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     // Tải dữ liệu từ API
     try {
@@ -77,7 +101,7 @@ function showHome() {
 
             grid.innerHTML += `
                 <div class="book-card" onclick="showStory('${story.id}')">
-                    <div class="cover-wrapper"><img src="${story.cover}" alt="Bìa truyện"></div>
+                    <div class="cover-wrapper">${buildCoverImgHtml(story.cover, 'thumb')}</div>
                     <h3>${story.title}</h3>
                     <p>Tác giả: ${story.author}</p>
                     <p style="margin-top:6px; font-size:0.85rem; color: var(--text-color); opacity:0.85">
@@ -100,7 +124,7 @@ function showStory(storyId) {
     
     // Render Metadata
     document.getElementById('story-meta-container').innerHTML = `
-        <div class="cover-wrapper"><img src="${story.cover}" alt="Cover"></div>
+        <div class="cover-wrapper">${buildCoverImgHtml(story.cover, 'meta')}</div>
         <div class="meta-info">
             <h1>${story.title}</h1>
             <p><strong>Tác giả:</strong> ${story.author}</p>

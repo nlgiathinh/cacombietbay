@@ -245,13 +245,16 @@ function displayChapters(filterStoryId = '') {
     sorted.forEach(chapter => {
         const card = document.createElement('div');
         card.className = 'item-card';
+        // Show chapter title without the ordinal prefix. The chapter number is
+        // used only for sorting; avoid displaying "Chương N:" in the UI.
         const rawTitle = chapter.title ? chapter.title.trim() : '';
-        const chapterLabel = `Chương ${chapter.chapter_number}`;
-        let displayTitle = chapterLabel;
+        let displayTitle = '';
         if (rawTitle) {
-            const normalizedRaw = rawTitle.replace(/\s+/g, ' ').trim();
-            const titlePattern = new RegExp(`^${chapterLabel.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}(?:\s*[:\-–—]\s*)?`, 'i');
-            displayTitle = titlePattern.test(normalizedRaw) ? normalizedRaw : `${chapterLabel}: ${normalizedRaw}`;
+            // Strip leading "Chương <number>" and any separator like ':' or '-'
+            displayTitle = rawTitle.replace(/^\s*chương\s*\d+\s*(?:[:\-–—]\s*)?/i, '').trim();
+            if (!displayTitle) displayTitle = 'Chương';
+        } else {
+            displayTitle = 'Chương';
         }
         card.innerHTML = `
             <div class="item-info">
