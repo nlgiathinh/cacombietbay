@@ -1,2 +1,5 @@
-flask
-flask-cors
+Flask
+Flask-CORS
+Werkzeug
+requests
+supabase

@@ -1,9 +1,19 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import sqlite3
 import os
 from werkzeug.utils import secure_filename
-from database import get_db_connection
+from database import (
+    get_stories as db_get_stories,
+    get_story as db_get_story,
+    create_story,
+    update_story as db_update_story,
+    delete_story as db_delete_story,
+    get_chapters as db_get_chapters,
+    get_chapter as db_get_chapter,
+    create_chapter,
+    update_chapter as db_update_chapter,
+    delete_chapter as db_delete_chapter
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -22,27 +32,32 @@ def dict_from_row(row):
 
 @app.route('/api/stories', methods=['GET'])
 def get_stories():
-    conn = get_db_connection()
-    stories = conn.execute('SELECT * FROM stories ORDER BY created_at DESC').fetchall()
-    conn.close()
-    return jsonify([dict_from_row(s) for s in stories])
+    stories = db_get_stories()
+    return jsonify(stories)
 
 @app.route('/api/stories/<int:story_id>', methods=['GET'])
 def get_story(story_id):
-    conn = get_db_connection()
-    story = conn.execute('SELECT * FROM stories WHERE id = ?', (story_id,)).fetchone()
-    conn.close()
+    story = db_get_story(story_id)
     if story:
-        return jsonify(dict_from_row(story))
+        return jsonify(story)
     return jsonify({'error': 'Story not found'}), 404
+
+def _get_request_data():
+    if request.is_json:
+        return request.get_json(silent=True) or {}
+    return request.form
+
 
 @app.route('/api/stories', methods=['POST'])
 def add_story():
-    title = request.form.get('title')
-    author = request.form.get('author')
-    description = request.form.get('description')
-    
-    cover_path = ''
+    data = _get_request_data()
+    title = data.get('title')
+    author = data.get('author', '')
+    description = data.get('description', '')
+    status = data.get('status', 'ongoing')
+    genre = data.get('genre', '')
+    cover_path = data.get('cover_path', '')
+
     if 'cover' in request.files:
         file = request.files['cover']
         if file.filename != '':
@@ -50,31 +65,26 @@ def add_story():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             cover_path = filename
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        'INSERT INTO stories (title, author, description, cover_path) VALUES (?, ?, ?, ?)',
-        (title, author, description, cover_path)
-    )
-    conn.commit()
-    story_id = cursor.lastrowid
-    conn.close()
-    return jsonify({'id': story_id, 'message': 'Story added successfully'}), 201
+    story = create_story(title, author, description, cover_path, status, genre)
+    if not story:
+        return jsonify({'error': 'Unable to create story'}), 500
+    return jsonify({'id': story.get('id'), 'message': 'Story added successfully', 'data': story}), 201
+
 
 @app.route('/api/stories/<int:story_id>', methods=['PUT'])
 def update_story(story_id):
-    title = request.form.get('title')
-    author = request.form.get('author')
-    description = request.form.get('description')
-    
-    conn = get_db_connection()
-    story = conn.execute('SELECT * FROM stories WHERE id = ?', (story_id,)).fetchone()
-    
-    if not story:
-        conn.close()
+    data = _get_request_data()
+    existing_story = db_get_story(story_id)
+    if not existing_story:
         return jsonify({'error': 'Story not found'}), 404
 
-    cover_path = story['cover_path']
+    title = data.get('title', existing_story.get('title'))
+    author = data.get('author', existing_story.get('author', ''))
+    description = data.get('description', existing_story.get('description', ''))
+    status = data.get('status', existing_story.get('status', 'ongoing'))
+    genre = data.get('genre', existing_story.get('genre', ''))
+    cover_path = data.get('cover_path', existing_story.get('cover_path', ''))
+
     if 'cover' in request.files:
         file = request.files['cover']
         if file.filename != '':
@@ -82,78 +92,71 @@ def update_story(story_id):
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             cover_path = filename
 
-    conn.execute(
-        'UPDATE stories SET title = ?, author = ?, description = ?, cover_path = ? WHERE id = ?',
-        (title, author, description, cover_path, story_id)
-    )
-    conn.commit()
-    conn.close()
-    return jsonify({'message': 'Story updated successfully'})
+    story = db_update_story(story_id, title, author, description, cover_path, status, genre)
+    if not story:
+        return jsonify({'error': 'Unable to update story'}), 500
+    return jsonify({'message': 'Story updated successfully', 'data': story})
 
 @app.route('/api/stories/<int:story_id>', methods=['DELETE'])
 def delete_story(story_id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM stories WHERE id = ?', (story_id,))
-    conn.commit()
-    conn.close()
+    success = db_delete_story(story_id)
+    if not success:
+        return jsonify({'error': 'Unable to delete story'}), 500
     return jsonify({'message': 'Story deleted successfully'})
 
 # --- Chapter Endpoints ---
 
 @app.route('/api/stories/<int:story_id>/chapters', methods=['GET'])
 def get_chapters(story_id):
-    conn = get_db_connection()
-    chapters = conn.execute('SELECT * FROM chapters WHERE story_id = ? ORDER BY chapter_number ASC', (story_id,)).fetchall()
-    conn.close()
-    return jsonify([dict_from_row(c) for c in chapters])
+    chapters = db_get_chapters(story_id)
+    return jsonify(chapters)
 
 @app.route('/api/chapters/<int:chapter_id>', methods=['GET'])
 def get_chapter(chapter_id):
-    conn = get_db_connection()
-    chapter = conn.execute('SELECT * FROM chapters WHERE id = ?', (chapter_id,)).fetchone()
-    conn.close()
+    chapter = db_get_chapter(chapter_id)
     if chapter:
-        return jsonify(dict_from_row(chapter))
+        return jsonify(chapter)
     return jsonify({'error': 'Chapter not found'}), 404
 
 @app.route('/api/stories/<int:story_id>/chapters', methods=['POST'])
 def add_chapter(story_id):
-    chapter_number = request.form.get('chapter_number')
-    title = request.form.get('title')
-    content = request.form.get('content') # This could be text or image paths
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        'INSERT INTO chapters (story_id, chapter_number, title, content) VALUES (?, ?, ?, ?)',
-        (story_id, chapter_number, title, content)
-    )
-    conn.commit()
-    chapter_id = cursor.lastrowid
-    conn.close()
-    return jsonify({'id': chapter_id, 'message': 'Chapter added successfully'}), 201
+    data = _get_request_data()
+    chapter_number = data.get('chapter_number')
+    if chapter_number is not None:
+        try:
+            chapter_number = int(chapter_number)
+        except (ValueError, TypeError):
+            chapter_number = None
+    title = data.get('title', '')
+    content = data.get('content', '')
+
+    chapter = create_chapter(story_id, chapter_number, title, content)
+    if not chapter:
+        return jsonify({'error': 'Unable to create chapter'}), 500
+    return jsonify({'id': chapter.get('id'), 'message': 'Chapter added successfully', 'data': chapter}), 201
 
 @app.route('/api/chapters/<int:chapter_id>', methods=['PUT'])
 def update_chapter(chapter_id):
-    chapter_number = request.form.get('chapter_number')
-    title = request.form.get('title')
-    content = request.form.get('content')
-    
-    conn = get_db_connection()
-    conn.execute(
-        'UPDATE chapters SET chapter_number = ?, title = ?, content = ? WHERE id = ?',
-        (chapter_number, title, content, chapter_id)
-    )
-    conn.commit()
-    conn.close()
-    return jsonify({'message': 'Chapter updated successfully'})
+    data = _get_request_data()
+    chapter_number = data.get('chapter_number')
+    if chapter_number is not None:
+        try:
+            chapter_number = int(chapter_number)
+        except (ValueError, TypeError):
+            chapter_number = None
+    title = data.get('title')
+    content = data.get('content')
+
+    chapter = db_update_chapter(chapter_id, chapter_number, title, content)
+    if not chapter:
+        return jsonify({'error': 'Unable to update chapter'}), 500
+    return jsonify({'message': 'Chapter updated successfully', 'data': chapter})
 
 @app.route('/api/chapters/<int:chapter_id>', methods=['DELETE'])
 def delete_chapter(chapter_id):
-    conn = get_db_connection()
-    conn.execute('DELETE FROM chapters WHERE id = ?', (chapter_id,))
-    conn.commit()
-    conn.close()
+    success = db_delete_chapter(chapter_id)
+    if not success:
+        return jsonify({'error': 'Unable to delete chapter'}), 500
     return jsonify({'message': 'Chapter deleted successfully'})
 
 # Serve static files

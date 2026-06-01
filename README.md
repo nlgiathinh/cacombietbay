@@ -1,6 +1,6 @@
 # CaComBietBay - Quản Lý Truyện
 
-Dự án đã được chuyển đổi sang sử dụng Python (Flask) và SQLite.
+Dự án đã được chuyển đổi sang sử dụng Python (Flask) và Supabase để lưu metadata truyện/chương. SQLite vẫn được dùng làm fallback cục bộ khi không cấu hình Supabase.
 
 ## Hướng dẫn cài đặt
 
@@ -53,12 +53,24 @@ create table chapters (
    - `SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
+   - `DATABASE_PATH` (nếu bạn cần trỏ SQLite vào thư mục writable như `/tmp/database.db` trên môi trường serverless)
 4. Deploy bằng Vercel CLI hoặc dashboard.
 
 > Lưu ý: `SUPABASE_SERVICE_ROLE_KEY` cần giữ bí mật, chỉ cấu hình trong Vercel Environment Variables.
 
+### Cấu hình Supabase Storage
+1. Vào Supabase dashboard, chọn `Storage`.
+2. Tạo bucket mới tên `covers`.
+3. Mở quyền public cho bucket hoặc cấu hình URL public để ứng dụng có thể lấy ảnh bìa trực tiếp.
+4. Trong trang admin, bạn có thể chọn ảnh và upload trực tiếp lên bucket `covers`, sau đó ứng dụng sẽ lưu URL trả về vào `cover_path`.
+
+### Lưu ý về SQLite trên môi trường serverless
+- Nếu bạn chạy app trong môi trường serverless như Vercel, thư mục chứa mã nguồn có thể ở chế độ read-only.
+- Ứng dụng hiện đã cố gắng tự động dùng `DATABASE_PATH` hoặc thư mục tạm của hệ thống nếu thư mục gốc không ghi được.
+- Với deploy production lâu dài, Supabase database là lựa chọn tốt hơn để lưu dữ liệu bền vững.
 ## Các tính năng mới
 - Quản lý Truyện và Chương riêng biệt.
 - Hỗ trợ upload ảnh bìa cho truyện.
-- Lưu trữ dữ liệu tập trung trong SQLite (`database.db`).
+- Lưu trữ metadata truyện/chương qua Supabase.
+- Còn giữ fallback SQLite cục bộ để chạy offline.
 - Chỉnh sửa và xóa Truyện/Chương dễ dàng.

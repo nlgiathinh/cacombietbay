@@ -149,6 +149,12 @@
                         <label>URL Ảnh Bìa:</label>
                         <input type="url" id="story-cover-url" placeholder="https://example.com/cover.jpg">
                     </div>
+                    <div class="form-group">
+                        <label>Upload Ảnh Bìa lên Supabase:</label>
+                        <input type="file" id="story-cover-file" accept="image/*">
+                        <button type="button" class="btn-submit" onclick="uploadStoryCoverFile()">📤 Upload lên Supabase</button>
+                        <small>Nếu upload xong, link sẽ tự động điền vào ô URL.</small>
+                    </div>
                     
                     <div class="form-group">
                         <label>Thể Loại:</label>
@@ -248,7 +254,9 @@
                 </div>
                 <div class="form-group">
                     <label>Ảnh Bìa:</label>
-                    <input type="text" id="edit-story-cover" required>
+                    <input type="url" id="edit-story-cover" required>
+                    <input type="file" id="edit-story-cover-file" accept="image/*">
+                    <button type="button" class="btn-submit" onclick="uploadEditStoryCoverFile()">📤 Upload lên Supabase</button>
                     <img id="edit-cover-preview" class="cover-preview">
                 </div>
                 <div class="form-group">
@@ -291,6 +299,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

@@ -1,5 +1,69 @@
 const API_URL = '/api';
 
+const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const supabaseClient = typeof supabase !== 'undefined'
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
+
+function _normalizeFileName(filename) {
+    return filename.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9._-]/g, '');
+}
+
+async function uploadImageToSupabase(file) {
+    if (!supabaseClient) {
+        alert('Supabase chưa được cấu hình. Vui lòng cập nhật SUPABASE_URL và SUPABASE_ANON_KEY.');
+        throw new Error('Supabase client not available');
+    }
+    const fileName = `${Date.now()}-${_normalizeFileName(file.name)}`;
+    const { data, error } = await supabaseClient.storage.from('covers').upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+    });
+    if (error) {
+        throw error;
+    }
+    const { data: publicData, error: publicError } = supabaseClient.storage.from('covers').getPublicUrl(fileName);
+    if (publicError) {
+        throw publicError;
+    }
+    return publicData.publicUrl;
+}
+
+async function uploadStoryCoverFile() {
+    const input = document.getElementById('story-cover-file');
+    if (!input || !input.files.length) {
+        alert('Vui lòng chọn file ảnh bìa để upload.');
+        return;
+    }
+    try {
+        const url = await uploadImageToSupabase(input.files[0]);
+        document.getElementById('story-cover-url').value = url;
+        alert('Upload bìa lên Supabase thành công!');
+    } catch (err) {
+        console.error(err);
+        alert('Upload thất bại: ' + (err.message || err));
+    }
+}
+
+async function uploadEditStoryCoverFile() {
+    const input = document.getElementById('edit-story-cover-file');
+    if (!input || !input.files.length) {
+        alert('Vui lòng chọn file ảnh bìa để upload.');
+        return;
+    }
+    try {
+        const url = await uploadImageToSupabase(input.files[0]);
+        document.getElementById('edit-story-cover').value = url;
+        document.getElementById('edit-cover-preview').src = url;
+        document.getElementById('edit-cover-preview').style.display = 'block';
+        alert('Upload bìa lên Supabase thành công!');
+    } catch (err) {
+        console.error(err);
+        alert('Upload thất bại: ' + (err.message || err));
+    }
+}
+
 // --- Tab Switching ---
 function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
