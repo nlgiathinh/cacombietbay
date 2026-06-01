@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Cá Cơm Biết Bay - Admin Quản lý</title>
+    <link rel="stylesheet" href="style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        body { padding: 0; }
+        /* Force Plus Jakarta across admin page for consistent typography */
+        body.ui-text,
+        .admin-container,
+        .admin-header,
+        .tabs-nav,
+        .tab-btn,
+        label,
+        input,
+        textarea,
+        .item-card,
+        .item-info,
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    .admin-header {
+            background: var(--ui-bg);
+            padding: 10px 2%;
+            border-bottom: 1px solid var(--ui-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        
+        /* Tabs Navigation */
+        .tabs-nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--ui-border);
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+        .tab-btn:hover { color: var(--accent-color); }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Forms */
+        .form-section { background: var(--ui-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--ui-border); margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; color: var(--text-color); }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--accent-color); background: transparent; color: var(--text-color); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; }
+        textarea { height: 300px; resize: vertical; line-height: 1.6; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .btn-submit { background: var(--accent-color); color: white; width: 100%; padding: 12px; font-size: 1rem; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; margin-top: 15px; }
+        .btn-submit:hover { opacity: 0.9; }
+        
+        /* List Items */
+        .item-list { display: flex; flex-direction: column; gap: 15px; }
+        .item-card { background: var(--ui-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--ui-border); display: flex; justify-content: space-between; align-items: center; }
+        .item-info { flex: 1; }
+        .item-info h4 { color: var(--accent-color); margin-bottom: 5px; font-weight: 700; }
+        .item-info p { font-size: 0.9rem; opacity: 0.8; margin: 3px 0; }
+        
+        .item-actions { display: flex; gap: 10px; }
+        .btn-action { padding: 8px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.3s; }
+        .btn-edit { background: #FFC107; color: #000; }
+        .btn-edit:hover { opacity: 0.8; }
+        .btn-delete { background: #F44336; color: white; }
+        .btn-delete:hover { opacity: 0.8; }
+        
+        /* Modal for editing */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--ui-bg); padding: 30px; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: var(--accent-color); }
+        .btn-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-color); }
+        
+        .cover-preview { max-width: 150px; max-height: 200px; margin-top: 10px; border-radius: 8px; object-fit: cover; }
+        
+        .empty-state { text-align: center; padding: 40px; color: var(--text-color); opacity: 0.6; }
+        .empty-state i { font-size: 3rem; margin-bottom: 15px; display: block; }
+    </style>
+</head>
+<body class="ui-text" data-theme="light">
+
+        <div class="admin-header">
+            <div class="controls">
+                <button onclick="changeTheme('light')" title="Ban ngày"><i class='bx bx-sun'></i></button>
+                <button onclick="changeTheme('sepia')" title="Giấy cũ"><i class='bx bx-coffee'></i></button>
+                <button onclick="changeTheme('dark')" title="Ban đêm"><i class='bx bx-moon'></i></button>
+            </div>
+
+<div class="logo" onclick="location.href='index.html'" style="cursor: pointer;">
+            <img src="title.png" alt="Tên trang" style="height: 48px; object-fit: contain;">
+        </div>
+        <div class="controls">
+            <a href="index.html" title="Trang chủ" style="color: var(--accent-color); text-decoration: none; font-weight: 600;"><i class='bx bx-home'></i></a>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <h1 style="color: var(--accent-color); margin-bottom: 20px;">📚 Quản lý Truyện & Chương</h1>
+        
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('tab-add-story')">📖 Thêm Truyện Mới</button>
+            <button class="tab-btn" onclick="switchTab('tab-manage-stories')">📋 Quản lý Truyện</button>
+            <button class="tab-btn" onclick="switchTab('tab-add-chapter')">✍️ Thêm Chương Mới</button>
+            <button class="tab-btn" onclick="switchTab('tab-manage-chapters')">📑 Quản lý Chương</button>
+        </div>
+
+        <!-- TAB 1: Add New Story -->
+        <div id="tab-add-story" class="tab-content active">
+            <div class="form-section">
+                <h2 style="color: var(--accent-color); margin-bottom: 20px;">Tạo Truyện Mới</h2>
+                <form id="form-add-story" onsubmit="handleAddStory(event)">
+                    <div class="form-group">
+                        <label>Tên Truyện:</label>
+                        <input type="text" id="story-title" placeholder="VD: Cá Cơm Biết Bay" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tác Giả:</label>
+                        <input type="text" id="story-author" placeholder="VD: Nguyễn Văn A" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mô Tả Ngắn:</label>
+                        <textarea id="story-description" placeholder="Mô tả về nội dung truyện..." required style="height: 120px;"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>URL Ảnh Bìa:</label>
+                        <input type="url" id="story-cover-url" placeholder="https://example.com/cover.jpg">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Thể Loại:</label>
+                        <input type="text" id="story-genre" placeholder="VD: Phiêu lưu, Tình cảm" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Trạng Thái:</label>
+                        <select id="story-status" required>
+                            <option value="ongoing">Đang cập nhật</option>
+                            <option value="completed">Hoàn thành</option>
+                            <option value="hiatus">Tạm dừng</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">✅ Lưu Truyện Mới</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 2: Manage Stories -->
+        <div id="tab-manage-stories" class="tab-content">
+            <h2 style="color: var(--accent-color); margin-bottom: 20px;">Danh Sách Truyện</h2>
+            <div id="stories-list" class="item-list">
+                <div class="empty-state">
+                    <i class='bx bx-book'></i>
+                    <p>Chưa có truyện nào. Hãy thêm truyện mới!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Add New Chapter -->
+        <div id="tab-add-chapter" class="tab-content">
+            <div class="form-section">
+                <h2 style="color: var(--accent-color); margin-bottom: 20px;">Thêm Chương Mới</h2>
+                <form id="form-add-chapter" onsubmit="handleAddChapter(event)">
+                    <div class="form-group">
+                        <label>Chọn Truyện:</label>
+                        <select id="select-story" required>
+                            <option value="">-- Chọn truyện --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tên Chương:</label>
+                        <input type="text" id="chap-title" placeholder="VD: Chương 1: Bắt đầu" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nội Dung (HTML hỗ trợ, bao quanh đoạn văn bằng <p>...</p>):</label>
+                        <textarea id="chap-content" placeholder="<p>Nhập nội dung truyện tại đây...</p>" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">✅ Lưu Chương Mới</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 4: Manage Chapters -->
+        <div id="tab-manage-chapters" class="tab-content">
+            <h2 style="color: var(--accent-color); margin-bottom: 20px;">Danh Sách Chương</h2>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Lọc theo Truyện:</label>
+                <select id="filter-story-chapters" onchange="filterChapters()">
+                    <option value="">-- Tất cả truyện --</option>
+                </select>
+            </div>
+            <div id="chapters-list" class="item-list">
+                <div class="empty-state">
+                    <i class='bx bx-file'></i>
+                    <p>Chưa có chương nào.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Story Modal -->
+    <div id="modal-edit-story" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chỉnh Sửa Truyện</h2>
+                <button class="btn-close" onclick="closeModal('modal-edit-story')">&times;</button>
+            </div>
+            <form id="form-edit-story" onsubmit="handleEditStory(event)">
+                <input type="hidden" id="edit-story-id">
+                <div class="form-group">
+                    <label>Tên Truyện:</label>
+                    <input type="text" id="edit-story-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Tác Giả:</label>
+                    <input type="text" id="edit-story-author" required>
+                </div>
+                <div class="form-group">
+                    <label>Mô Tả Ngắn:</label>
+                    <textarea id="edit-story-description" required style="height: 120px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Ảnh Bìa:</label>
+                    <input type="text" id="edit-story-cover" required>
+                    <img id="edit-cover-preview" class="cover-preview">
+                </div>
+                <div class="form-group">
+                    <label>Thể Loại:</label>
+                    <input type="text" id="edit-story-genre" required>
+                </div>
+                <div class="form-group">
+                    <label>Trạng Thái:</label>
+                    <select id="edit-story-status" required>
+                        <option value="ongoing">Đang cập nhật</option>
+                        <option value="completed">Hoàn thành</option>
+                        <option value="hiatus">Tạm dừng</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">💾 Cập Nhật Truyện</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Chapter Modal -->
+    <div id="modal-edit-chapter" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chỉnh Sửa Chương</h2>
+                <button class="btn-close" onclick="closeModal('modal-edit-chapter')">&times;</button>
+            </div>
+            <form id="form-edit-chapter" onsubmit="handleEditChapter(event)">
+                <input type="hidden" id="edit-chapter-id">
+                <input type="hidden" id="edit-chapter-story-id">
+                <div class="form-group">
+                    <label>Tên Chương:</label>
+                    <input type="text" id="edit-chapter-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Nội Dung:</label>
+                    <textarea id="edit-chapter-content" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">💾 Cập Nhật Chương</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+/* =========================================
+   1. FONTS & SETUP
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* Mặc định: Light Mode (Bầu trời mây trắng) - nền xanh nhạt hơn */
+    --bg-color: #EAF8FF; /* nền xanh nhạt hơn */
+    --bg-grad-end: #DFF6FF;
+    --text-color: #1A365D;
+    --accent-color: #2B6CB0; /* Xanh đại dương */
+    --accent-glow: #63B3ED;
+    --ui-bg: rgba(255, 255, 255, 0.92);
+    --ui-border: rgba(43, 108, 176, 0.08);
+    --bokeh-1: rgba(99, 179, 237, 0.2);
+    --bokeh-2: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="sepia"] {
+    --bg-color: #FBF6F0;
+    --bg-grad-end: #F3E8D8;
+    --text-color: #5C4033;
+    --accent-color: #8B6F47;
+    --accent-glow: #D4A574;
+    --ui-bg: rgba(255, 248, 240, 0.95);
+    --ui-border: rgba(139, 111, 71, 0.15);
+    --bokeh-1: rgba(212, 165, 116, 0.2);
+    --bokeh-2: rgba(255, 250, 245, 0.5);
+}
+
+[data-theme="dark"] {
+    /* Dark Mode (Biển đêm lấp lánh) */
+    --bg-color: #1A1F3A;
+    --bg-grad-end: #0F1428;
+    --text-color: #E8EEF7;
+    --accent-color: #7BA3FF;
+    --accent-glow: #5B8FFF;
+    --ui-bg: rgba(26, 31, 58, 0.9);
+    --ui-border: rgba(123, 163, 255, 0.25);
+    --bokeh-1: rgba(91, 143, 255, 0.12);
+    --bokeh-2: rgba(180, 200, 255, 0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease; }
+
+body {
+    background-color: var(--bg-color); color: var(--text-color);
+    font-family: 'Merriweather', serif; line-height: 1.8; overflow-x: hidden;
+}
+
+.ui-text { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+/* =========================================
+   2. BOKEH & BACKGROUND
+   ========================================= */
+.ambient-background {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1; pointer-events: none; overflow: hidden;
+    background: linear-gradient(180deg, var(--bg-color) 0%, var(--bg-grad-end) 100%);
+}
+.bokeh, .bokeh:nth-child(1), .bokeh:nth-child(2) { display: none !important; }
+
+@keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 40px); } }
+
+/* =========================================
+   3. HEADER & NAV
+   ========================================= */
+header {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(15px); background: var(--ui-bg); border-bottom: 1px solid var(--ui-border);
+    padding: 10px 2%; display: flex; justify-content: space-between; align-items: center;
+}
+.logo { font-size: 1.4rem; font-weight: 800; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; position: absolute; left: 50%; transform: translateX(-50%); }
+.logo span { font-size: 1.8rem; }
+.controls { display: flex; gap: 8px; }
+.admin-header { position: relative; }
+.controls button {
+    background: transparent; border: 1px solid var(--ui-border); color: var(--text-color);
+    padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; display: flex; align-items: center;
+}
+.controls button:hover { background: var(--accent-color); color: #fff; }
+
+/* =========================================
+   4. THƯ VIỆN & CHI TIẾT TRUYỆN (Grid Layout)
+   ========================================= */
+.container { max-width: 1200px; margin: 40px auto; padding: 0 10px; }
+
+/* Lưới truyện */
+.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; }
+.book-card {
+    background: var(--ui-bg); border: 1px solid var(--ui-border); border-radius: 16px;
+    padding: 15px; cursor: pointer; text-align: center; transition: transform 0.3s, box-shadow 0.3s;
+}
+.book-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px var(--ui-border); }
+.book-card img { width: 100%; height: 280px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; }
+.book-card h3 { font-size: 1.1rem; color: var(--accent-color); font-weight: 700; margin-bottom: 5px; }
+.book-card p { font-size: 0.9rem; opacity: 0.8; }
+
+/* Metadata truyện */
+.story-meta { display: flex; gap: 30px; margin-bottom: 40px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--ui-border); }
+.story-meta img { width: 220px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.meta-info h1 { font-size: 2.2rem; color: var(--accent-color); margin-bottom: 10px; font-weight: 800;}
+.chapter-list { display: flex; flex-direction: column; gap: 10px; }
+.chap-item { padding: 15px 20px; background: var(--ui-bg); border: 1px solid var(--ui-border); border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between;}
+.chap-item:hover { background: var(--accent-color); color: white; }
+
+/* =========================================
+   5. KHU VỰC ĐỌC
+   ========================================= */
+.reading-content { text-align: left; font-size: 1.2rem; white-space: pre-wrap; word-wrap: break-word; }
+.reading-content p { margin-bottom: 24px; text-indent: 20px; white-space: pre-wrap; }
+.chapter-title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 40px; color: var(--accent-color); font-family: 'Plus Jakarta Sans', sans-serif;}
+
+.chapter-nav { display: flex; justify-content: space-between; margin: 50px 0; padding-top: 20px; border-top: 1px dashed var(--ui-border); }
+.btn-nav { padding: 12px 24px; background-color: var(--accent-color); color: #fff; border: none; border-radius: 25px; cursor: pointer; font-weight: 600; }
+.btn-nav:hover { background-color: var(--text-color); }
+.btn-nav:disabled { background: var(--ui-border); cursor: not-allowed; color: var(--text-color); }
+
+/* Tiện ích ẩn hiện */
+.hidden { display: none !important; }
