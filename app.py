@@ -17,7 +17,7 @@ from database import (
     delete_chapter as db_delete_chapter
 )
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+app = Flask(__name__)
 CORS(app)
 
 UPLOAD_FOLDER = 'uploads'
@@ -213,10 +213,7 @@ def delete_chapter(chapter_id):
 # Serve favicon directly
 @app.route('/favicon.ico')
 def favicon():
-    try:
-        return send_from_directory('.', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
-    except:
-        return '', 404
+    return send_from_directory('.', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 # Serve static files
 @app.route('/')
