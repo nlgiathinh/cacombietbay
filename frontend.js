@@ -173,8 +173,8 @@ function changeFontSize(step) {
 
 // --- ADMIN ACCESS ---
 function checkAdmin() {
-    const pass = prompt("Nhập mật khẩu để vào phòng viết truyện (Gợi ý: cacom)");
-    if (pass === "cacom") {
+    const pass = prompt("Nhập mật khẩu để vào phòng viết truyện");
+    if (pass === "vydepgai") {
         window.location.href = "admin.html";
     } else if (pass !== null) {
         alert("Sai mật khẩu!");
