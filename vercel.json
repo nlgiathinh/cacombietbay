@@ -5,6 +5,18 @@
   ],
   "routes": [
     { "src": "/favicon.ico", "dest": "/favicon.ico" },
+    { "src": "/favicon.png", "dest": "/favicon.png" },
+    { "src": "/logo.png", "dest": "/logo.png" },
+    { "src": "/title.png", "dest": "/title.png" },
+    { "src": "/samplecover.png", "dest": "/samplecover.png" },
+    { "src": "/site.webmanifest", "dest": "/site.webmanifest" },
+    { "src": "/style.css", "dest": "/style.css" },
+    { "src": "/frontend.js", "dest": "/frontend.js" },
+    { "src": "/admin.js", "dest": "/admin.js" },
+    { "src": "/index.html", "dest": "/index.html" },
+    { "src": "/admin.html", "dest": "/admin.html" },
+    { "src": "/api/(.*)", "dest": "/app.py" },
+    { "src": "/uploads/(.*)", "dest": "/app.py" },
     { "src": "/(.*)", "dest": "/app.py" }
   ]
 }
