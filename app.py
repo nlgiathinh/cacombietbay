@@ -210,6 +210,11 @@ def delete_chapter(chapter_id):
         return jsonify({'error': 'Unable to delete chapter'}), 500
     return jsonify({'message': 'Chapter deleted successfully'})
 
+# Serve favicon directly
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory('.', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
 # Serve static files
 @app.route('/')
 def index():

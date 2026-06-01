@@ -245,9 +245,17 @@ function displayChapters(filterStoryId = '') {
     sorted.forEach(chapter => {
         const card = document.createElement('div');
         card.className = 'item-card';
+        const rawTitle = chapter.title ? chapter.title.trim() : '';
+        const chapterLabel = `Chương ${chapter.chapter_number}`;
+        let displayTitle = chapterLabel;
+        if (rawTitle) {
+            const normalizedRaw = rawTitle.replace(/\s+/g, ' ').trim();
+            const titlePattern = new RegExp(`^${chapterLabel.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}(?:\s*[:\-–—]\s*)?`, 'i');
+            displayTitle = titlePattern.test(normalizedRaw) ? normalizedRaw : `${chapterLabel}: ${normalizedRaw}`;
+        }
         card.innerHTML = `
             <div class="item-info">
-                <h4>Chương ${chapter.chapter_number}${chapter.title ? ': ' + chapter.title : ''}</h4>
+                <h4>${displayTitle}</h4>
                 <p>Truyện: ${chapter.storyTitle}</p>
             </div>
             <div class="item-actions">
