@@ -126,7 +126,14 @@ function showHome() {
             else statusText = story.status;
 
             const { total: totalViews } = getStoryViewStats(story);
-            const hotBadge = hotIds.has(story.id) ? `<span class="hot-badge">🔥</span>` : '';
+            const hotBadge = hotIds.has(story.id)
+                ? `<span class="hot-star" title="Truyện nổi bật">
+                       <i class='bx bxs-star'></i>
+                       <span class="hot-spark hot-spark-1"></span>
+                       <span class="hot-spark hot-spark-2"></span>
+                       <span class="hot-spark hot-spark-3"></span>
+                   </span>`
+                : '';
 
             grid.innerHTML += `
                 <div class="book-card" onclick="showStory('${story.id}')" title="${story.title}">
