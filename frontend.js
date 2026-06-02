@@ -2,7 +2,7 @@
 const defaultData = [
     {
         id: "truyen_1",
-        title: "Nghê Thường Trướng Noãn",
+        title: "Sau Khi Trọng Sinh, Thứ Tử Âm Trầm Ngày Ngày Mong Nàng Thành Quả Phụ",
         author: "Cá Cơm Mộng Mơ",
         cover_path: "samplecover.png",
         description: "Một câu chuyện nhẹ nhàng về những chuyến bay vượt đại dương của chú cá nhỏ mang theo nhiều ước mơ...",
@@ -126,10 +126,10 @@ function showHome() {
             else statusText = story.status;
 
             const { total: totalViews } = getStoryViewStats(story);
-            const hotBadge = hotIds.has(story.id) ? `<span class="hot-badge">HOT</span>` : '';
+            const hotBadge = hotIds.has(story.id) ? `<span class="hot-badge">🔥</span>` : '';
 
             grid.innerHTML += `
-                <div class="book-card" onclick="showStory('${story.id}')">
+                <div class="book-card" onclick="showStory('${story.id}')" title="${story.title}">
                     <div class="cover-wrapper">
                         ${buildCoverImgHtml(story.cover, 'thumb')}
                         ${hotBadge}
@@ -139,9 +139,8 @@ function showHome() {
                     <p style="margin-top:6px; font-size:0.85rem; color: var(--text-color); opacity:0.85">
                         <strong style="color: var(--accent-color);">${statusText}</strong>
                     </p>
-                    <p style="margin-top:8px; font-size:0.8rem; color: var(--accent-color)">
+                    <p class="chapter-count" style="margin-top:8px; font-size:0.8rem; color: var(--accent-color)">
                         ${story.chapters.length} chương
-                        <span class="view-count"><i class='bx bx-show'></i> ${formatViews(totalViews)}</span>
                     </p>
                 </div>
             `;
