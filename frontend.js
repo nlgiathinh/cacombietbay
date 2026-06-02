@@ -143,8 +143,17 @@ function showStory(storyId) {
         chapList.innerHTML += `
             <div class="chap-item" onclick="readChapter(${idx})">
                 <span>${chap.title}</span>
+<<<<<<< Updated upstream
                 <span style="font-size:0.8rem; opacity:0.7;">${chap.views || 0} 👁️</span>
                 <i class='bx bx-book-open'></i>
+=======
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                    <i class='bx bx-book-open'></i>
+                    <span style="font-size:0.7rem; opacity:0.7; display: flex; align-items: center; gap: 2px;">
+                        ${chap.views || 0} <i class='bx bx-show'></i>
+                    </span>
+                </div>
+>>>>>>> Stashed changes
             </div>
         `;
     });
