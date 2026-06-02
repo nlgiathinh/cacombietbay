@@ -201,9 +201,9 @@ function readChapter(idx) {
     const contentDiv = document.getElementById('reading-content');
     contentDiv.innerHTML = '';
 
-    // Nếu nội dung chứa HTML (ví dụ <p>, <br>, <img>...), render HTML trực tiếp.
+    // Nếu nội dung chứa HTML (ví dụ <p>, <br>, <img>, <b>, <i>...), render HTML trực tiếp.
     // Ngược lại, coi đó là plain text và giữ nguyên newline bằng cách tách '\n' thành <p>.
-    if (chapter && typeof chapter.content === 'string' && /<\s*(p|br|div|img|span|strong|em|a)[\s>]/i.test(chapter.content)) {
+    if (chapter && typeof chapter.content === 'string' && /<\s*(p|br|div|img|span|strong|em|a|b|i)[\s>]/i.test(chapter.content)) {
         contentDiv.innerHTML = chapter.content;
     } else {
         const lines = (chapter && chapter.content) ? chapter.content.split('\n') : [];

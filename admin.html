@@ -126,50 +126,50 @@
         
         <!-- Tabs Navigation -->
         <div class="tabs-nav">
-            <button class="tab-btn active" onclick="switchTab('tab-add-story')">📖 Thêm Truyện Mới</button>
-            <button class="tab-btn" onclick="switchTab('tab-manage-stories')">📋 Quản lý Truyện</button>
-            <button class="tab-btn" onclick="switchTab('tab-add-chapter')">✍️ Thêm Chương Mới</button>
-            <button class="tab-btn" onclick="switchTab('tab-manage-chapters')">📑 Quản lý Chương</button>
+            <button class="tab-btn active" onclick="switchTab('tab-add-story')">📖 Thêm truyện mới</button>
+            <button class="tab-btn" onclick="switchTab('tab-manage-stories')">📋 Quản lý truyện</button>
+            <button class="tab-btn" onclick="switchTab('tab-add-chapter')">✍️ Thêm chương mới</button>
+            <button class="tab-btn" onclick="switchTab('tab-manage-chapters')">📑 Quản lý chương</button>
         </div>
 
         <!-- TAB 1: Add New Story -->
         <div id="tab-add-story" class="tab-content active">
             <div class="form-section">
-                <h2 style="color: var(--accent-color); margin-bottom: 20px;">Tạo Truyện Mới</h2>
+                <h2 style="color: var(--accent-color); margin-bottom: 20px;">Tạo truyện mới</h2>
                 <form id="form-add-story" onsubmit="handleAddStory(event)">
                     <div class="form-group">
-                        <label>Tên Truyện:</label>
-                        <input type="text" id="story-title" placeholder="VD: Cá Cơm Biết Bay" required>
+                        <label>Tên truyện:</label>
+                        <input type="text" id="story-title" placeholder="Cá Cơm Biết Bay" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Tác Giả:</label>
-                        <input type="text" id="story-author" placeholder="VD: Nguyễn Văn A" required>
+                        <label>Tác giả:</label>
+                        <input type="text" id="story-author" placeholder="Cáp Hoàng Ngọc Vy" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Mô Tả Ngắn:</label>
+                        <label>Mô tả ngắn:</label>
                         <textarea id="story-description" placeholder="Mô tả về nội dung truyện..." required style="height: 120px;"></textarea>
                     </div>
                     
                     <div class="form-group">
-                        <label>URL Ảnh Bìa:</label>
+                        <label>URL ảnh bìa:</label>
                         <input type="url" id="story-cover-url" placeholder="https://example.com/cover.jpg">
                     </div>
                     <div class="form-group">
-                        <label>Upload Ảnh Bìa lên Supabase:</label>
+                        <label>Ảnh bìa:</label>
                         <input type="file" id="story-cover-file" accept="image/*">
-                        <button type="button" class="btn-submit" onclick="uploadStoryCoverFile()">📤 Upload lên Supabase</button>
+                        <button type="button" class="btn-submit" style="font-family: 'Plus Jakarta Sans'" onclick="uploadStoryCoverFile()">📤 Upload lên cơ sở dữ liệu</button>
                         <small>Nếu upload xong, link sẽ tự động điền vào ô URL.</small>
                     </div>
                     
                     <div class="form-group">
-                        <label>Thể Loại:</label>
-                        <input type="text" id="story-genre" placeholder="VD: Phiêu lưu, Tình cảm" required>
+                        <label>Thể loại:</label>
+                        <input type="text" id="story-genre" placeholder="Phiêu lưu, Tình cảm,..." required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Trạng Thái:</label>
+                        <label>Trạng thái:</label>
                         <select id="story-status" required>
                             <option value="ongoing">Đang cập nhật</option>
                             <option value="completed">Hoàn thành</option>
@@ -177,14 +177,14 @@
                         </select>
                     </div>
                     
-                    <button type="submit" class="btn-submit">✅ Lưu Truyện Mới</button>
+                    <button type="submit" class="btn-submit" style="font-family: 'Plus Jakarta Sans'">✅ Lưu truyện mới</button>
                 </form>
             </div>
         </div>
 
         <!-- TAB 2: Manage Stories -->
         <div id="tab-manage-stories" class="tab-content">
-            <h2 style="color: var(--accent-color); margin-bottom: 20px;">Danh Sách Truyện</h2>
+            <h2 style="color: var(--accent-color); margin-bottom: 20px;">Danh sách truyện</h2>
             <div id="stories-list" class="item-list">
                 <div class="empty-state">
                     <i class='bx bx-book'></i>
@@ -196,30 +196,34 @@
         <!-- TAB 3: Add New Chapter -->
         <div id="tab-add-chapter" class="tab-content">
             <div class="form-section">
-                <h2 style="color: var(--accent-color); margin-bottom: 20px;">Thêm Chương Mới</h2>
+                <h2 style="color: var(--accent-color); margin-bottom: 20px;">Thêm chương mới</h2>
                 <form id="form-add-chapter" onsubmit="handleAddChapter(event)">
                     <div class="form-group">
-                        <label>Chọn Truyện:</label>
+                        <label>Chọn truyện:</label>
                         <select id="select-story" required>
                             <option value="">-- Chọn truyện --</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Số thứ tự chương:</label>
-                        <input type="number" id="chap-number" min="1" placeholder="VD: 1" required>
+                        <input type="number" id="chap-number" min="1" placeholder="1" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Tên Chương:</label>
-                        <input type="text" id="chap-title" placeholder="VD: Chương 1: Bắt đầu" required>
+                        <label>Tên chương:</label>
+                        <input type="text" id="chap-title" placeholder="Chương 1: Khởi thủy" required>
                     </div>
                     
                     <div class="form-group">
-                        <label>Nội Dung (HTML hỗ trợ, bao quanh đoạn văn bằng <p>...</p>):</label>
-                        <textarea id="chap-content" placeholder="<p>Nhập nội dung truyện tại đây...</p>" required></textarea>
+                        <label>Nội dung:</label>
+                        <div style="margin-bottom: 10px; display: flex; gap: 5px;">
+                            <button type="button" class="btn-action" onclick="formatText('b')" style="background: #eee; color: #333; width: 40px; height: 40px; font-family: 'Plus Jakarta Sans';"><b>B</b></button>
+                            <button type="button" class="btn-action" onclick="formatText('i')" style="background: #eee; color: #333; width: 40px; height: 40px; font-family: 'Merriweather';"><i>I</i></button>
+                        </div>
+                        <textarea id="chap-content" placeholder="Nhập nội dung truyện tại đây..." required></textarea>
                     </div>
                     
-                    <button type="submit" class="btn-submit">✅ Lưu Chương Mới</button>
+                    <button type="submit" class="btn-submit" style="font-family: 'Plus Jakarta Sans'">✅ Lưu chương mới</button>
                 </form>
             </div>
         </div>
@@ -228,9 +232,9 @@
         <div id="tab-manage-chapters" class="tab-content">
             <h2 style="color: var(--accent-color); margin-bottom: 20px;">Danh Sách Chương</h2>
             <div class="form-group" style="margin-bottom: 20px;">
-                <label>Lọc theo Truyện:</label>
+                <label>Chọn truyện:</label>
                 <select id="filter-story-chapters" onchange="filterChapters()">
-                    <option value="">-- Tất cả truyện --</option>
+                    <option value="">Tất cả</option>
                 </select>
             </div>
             <div id="chapters-list" class="item-list">
@@ -246,43 +250,43 @@
     <div id="modal-edit-story" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Chỉnh Sửa Truyện</h2>
+                <h2>Chỉnh sửa truyện</h2>
                 <button class="btn-close" onclick="closeModal('modal-edit-story')">&times;</button>
             </div>
             <form id="form-edit-story" onsubmit="handleEditStory(event)">
                 <input type="hidden" id="edit-story-id">
                 <div class="form-group">
-                    <label>Tên Truyện:</label>
+                    <label>Tên truyện:</label>
                     <input type="text" id="edit-story-title" required>
                 </div>
                 <div class="form-group">
-                    <label>Tác Giả:</label>
+                    <label>Tác giả:</label>
                     <input type="text" id="edit-story-author" required>
                 </div>
                 <div class="form-group">
-                    <label>Mô Tả Ngắn:</label>
+                    <label>Mô tả ngắn:</label>
                     <textarea id="edit-story-description" required style="height: 120px;"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Ảnh Bìa:</label>
+                    <label>Ảnh bìa:</label>
                     <input type="url" id="edit-story-cover" required>
                     <input type="file" id="edit-story-cover-file" accept="image/*">
-                    <button type="button" class="btn-submit" onclick="uploadEditStoryCoverFile()">📤 Upload lên Supabase</button>
+                    <button type="button" class="btn-submit" onclick="uploadEditStoryCoverFile()">📤 Tải lên cơ sở dữ liệu</button>
                     <img id="edit-cover-preview" class="cover-preview">
                 </div>
                 <div class="form-group">
-                    <label>Thể Loại:</label>
+                    <label>Thể loại:</label>
                     <input type="text" id="edit-story-genre" required>
                 </div>
                 <div class="form-group">
-                    <label>Trạng Thái:</label>
+                    <label>Trạng thái:</label>
                     <select id="edit-story-status" required>
                         <option value="ongoing">Đang cập nhật</option>
                         <option value="completed">Hoàn thành</option>
                         <option value="hiatus">Tạm dừng</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-submit">💾 Cập Nhật Truyện</button>
+                <button type="submit" class="btn-submit">💾 Cập nhật truyện</button>
             </form>
         </div>
     </div>
@@ -291,7 +295,7 @@
     <div id="modal-edit-chapter" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Chỉnh Sửa Chương</h2>
+                <h2>Chỉnh sửa chương</h2>
                 <button class="btn-close" onclick="closeModal('modal-edit-chapter')">&times;</button>
             </div>
             <form id="form-edit-chapter" onsubmit="handleEditChapter(event)">
@@ -302,14 +306,18 @@
                     <input type="number" id="edit-chapter-number" min="1" required>
                 </div>
                 <div class="form-group">
-                    <label>Tên Chương:</label>
+                    <label>Tên chương:</label>
                     <input type="text" id="edit-chapter-title" required>
                 </div>
-                <div class="form-group">
-                    <label>Nội Dung:</label>
-                    <textarea id="edit-chapter-content" required></textarea>
-                </div>
-                <button type="submit" class="btn-submit">💾 Cập Nhật Chương</button>
+                    <div class="form-group">
+                        <label>Nội dung:</label>
+                        <div style="margin-bottom: 10px; display: flex; gap: 5px;">
+                            <button type="button" class="btn-action" onclick="formatText('b', 'edit-chapter-content')" style="background: #eee; color: #333; width: 40px; height: 40px; font-family: 'Plus Jakarta Sans';"><b>B</b></button>
+                            <button type="button" class="btn-action" onclick="formatText('i', 'edit-chapter-content')" style="background: #eee; color: #333; width: 40px; height: 40px; font-family: 'Merriweather';"><i>I</i></button>
+                        </div>
+                        <textarea id="edit-chapter-content" required></textarea>
+                    </div>
+                <button type="submit" class="btn-submit">💾 Cập nhật chương</button>
             </form>
         </div>
     </div>

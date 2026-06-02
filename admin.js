@@ -416,3 +416,30 @@ function closeModal(modalId) {
 
 // Initial load
 loadStories();
+
+function formatText(tag, textareaId = 'chap-content') {
+    const textarea = document.getElementById(textareaId);
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+    
+    const openTag = `<${tag}>`;
+    const closeTag = `</${tag}>`;
+    
+    const newText = text.substring(0, start) + openTag + selectedText + closeTag + text.substring(end);
+    textarea.value = newText;
+    textarea.focus();
+    textarea.setSelectionRange(start + openTag.length, end + openTag.length);
+}
+
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'i')) {
+        e.preventDefault();
+        const tag = e.key === 'b' ? 'b' : 'i';
+        const activeElement = document.activeElement;
+        if (activeElement.id === 'chap-content' || activeElement.id === 'edit-chapter-content') {
+            formatText(tag, activeElement.id);
+        }
+    }
+});
