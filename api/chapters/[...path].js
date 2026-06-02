@@ -4,6 +4,7 @@ module.exports = async (req, res) => {
   const path = req.query.path || [];
   const parts = Array.isArray(path) ? path : [path];
   const chapterId = parts[0];
+  const isView = parts[1] === 'view';
 
   try {
     if (req.method === 'GET' && parts.length === 1) {
@@ -17,15 +18,29 @@ module.exports = async (req, res) => {
       if (error) {
         return res.status(404).json({ error: 'Chapter not found' });
       }
+      return res.status(200).json(data);
+    }
 
-      // Increment view count
-      const newViews = (data.views || 0) + 1;
-      await supabase
+    if (req.method === 'POST' && parts.length === 2 && isView) {
+      const { data: current, error: readError } = await supabase
+        .from('chapters')
+        .select('id, views')
+        .eq('id', chapterId)
+        .limit(1)
+        .single();
+
+      if (readError) {
+        return res.status(404).json({ error: 'Chapter not found' });
+      }
+
+      const newViews = (current.views || 0) + 1;
+      const { error: updateError } = await supabase
         .from('chapters')
         .update({ views: newViews })
         .eq('id', chapterId);
 
-      return res.status(200).json({ ...data, views: newViews });
+      if (updateError) throw updateError;
+      return res.status(200).json({ id: current.id, views: newViews });
     }
 
     if (req.method === 'PUT' && parts.length === 1) {

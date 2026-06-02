@@ -19,36 +19,13 @@ module.exports = async (req, res) => {
 
   try {
     if (req.method === 'GET' && parts.length === 0) {
-      const { data: stories, error: storiesError } = await supabase
+      const { data, error } = await supabase
         .from('stories')
         .select('*')
         .order('created_at', { ascending: false });
-      if (storiesError) throw storiesError;
+      if (error) throw error;
 
-      const { data: chapters, error: chaptersError } = await supabase
-        .from('chapters')
-        .select('story_id, views');
-      if (chaptersError) throw chaptersError;
-
-      const storyStats = stories.map(story => {
-        const storyChapters = chapters.filter(c => c.story_id === story.id);
-        const totalViews = storyChapters.reduce((acc, c) => acc + (c.views || 0), 0);
-        const avgViews = storyChapters.length > 0 ? totalViews / storyChapters.length : 0;
-        return { ...story, avgViews, totalViews };
-      });
-
-      const ongoingStories = storyStats.filter(s => s.status === 'ongoing');
-      const hotStories = ongoingStories
-        .sort((a, b) => b.avgViews - a.avgViews)
-        .slice(0, 5)
-        .map(s => s.id);
-
-      return res.status(200).json(storyStats.map(s => ({
-        ...serializeStory(s),
-        avgViews: s.avgViews,
-        totalViews: s.totalViews,
-        is_hot: hotStories.includes(s.id)
-      })));
+      return res.status(200).json(data.map(serializeStory));
     }
 
     if (req.method === 'GET' && parts.length === 1) {

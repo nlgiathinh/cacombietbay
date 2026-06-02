@@ -78,3 +78,14 @@ def delete_chapter(chapter_id):
     """Delete a chapter"""
     response = supabase.table('chapters').delete().eq('id', chapter_id).execute()
     return True
+
+def increment_chapter_view(chapter_id):
+    """Increase the view counter of a chapter by 1 and return the new value"""
+    current = supabase.table('chapters').select('id, views').eq('id', chapter_id).execute()
+    if not current.data:
+        return None
+    new_views = (current.data[0].get('views') or 0) + 1
+    response = supabase.table('chapters').update({'views': new_views}).eq('id', chapter_id).execute()
+    if not response.data:
+        return None
+    return {'id': chapter_id, 'views': new_views}

@@ -63,8 +63,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     cover: story.cover_path ? story.cover_path : 'logo.png',
                     description: story.description,
                     status: story.status || 'ongoing',
-                    is_hot: story.is_hot || false,
-                    totalViews: story.totalViews || 0,
                     chapters: chapters
                 });
             }
@@ -80,6 +78,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     showHome();
 });
 
+// Tính tổng và trung bình lượt view của một truyện
+function getStoryViewStats(story) {
+    const chapters = story.chapters || [];
+    const total = chapters.reduce((sum, c) => sum + (Number(c.views) || 0), 0);
+    const avg = chapters.length > 0 ? total / chapters.length : 0;
+    return { total, avg, count: chapters.length };
+}
+
+// Trả về Set chứa id của các truyện "đang cập nhật" có avg view cao nhất (gán HOT)
+function getHotStoryIds() {
+    const ongoing = db.filter(s => (s.status || 'ongoing') === 'ongoing');
+    const withStats = ongoing
+        .map(s => ({ id: s.id, avg: getStoryViewStats(s).avg }))
+        .filter(s => s.avg > 0);
+    if (withStats.length === 0) return new Set();
+    const maxAvg = Math.max(...withStats.map(s => s.avg));
+    return new Set(withStats.filter(s => s.avg === maxAvg).map(s => s.id));
+}
+
+function formatViews(n) {
+    if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return String(n);
+}
+
 // --- QUẢN LÝ VIEW ---
 function hideAllViews() {
     document.getElementById('view-home').classList.add('hidden');
@@ -91,9 +114,10 @@ function hideAllViews() {
 function showHome() {
     hideAllViews();
     document.getElementById('view-home').classList.remove('hidden');
-    
+
     const grid = document.getElementById('book-grid-container');
     grid.innerHTML = '';
+    const hotIds = getHotStoryIds();
         db.forEach(story => {
             let statusText = 'Đang cập nhật';
             if (story.status === 'completed') statusText = 'Hoàn thành';
@@ -101,16 +125,24 @@ function showHome() {
             else if (story.status === 'ongoing') statusText = 'Đang cập nhật';
             else statusText = story.status;
 
+            const { total: totalViews } = getStoryViewStats(story);
+            const hotBadge = hotIds.has(story.id) ? `<span class="hot-badge">HOT</span>` : '';
+
             grid.innerHTML += `
                 <div class="book-card" onclick="showStory('${story.id}')">
-                    ${story.is_hot ? '<div class="hot-badge" style="background:red; color:white; padding:2px 5px; font-size:0.7rem; position:absolute; top:5px; left:5px;">HOT</div>' : ''}
-                    <div class="cover-wrapper">${buildCoverImgHtml(story.cover, 'thumb')}</div>
+                    <div class="cover-wrapper">
+                        ${buildCoverImgHtml(story.cover, 'thumb')}
+                        ${hotBadge}
+                    </div>
                     <h3 class="story-card-title">${story.title}</h3>
                     <p>Tác giả: ${story.author}</p>
                     <p style="margin-top:6px; font-size:0.85rem; color: var(--text-color); opacity:0.85">
                         <strong style="color: var(--accent-color);">${statusText}</strong>
                     </p>
-                    <p style="margin-top:8px; font-size:0.8rem; color: var(--accent-color)">${story.chapters.length} chương</p>
+                    <p style="margin-top:8px; font-size:0.8rem; color: var(--accent-color)">
+                        ${story.chapters.length} chương
+                        <span class="view-count"><i class='bx bx-show'></i> ${formatViews(totalViews)}</span>
+                    </p>
                 </div>
             `;
         });
@@ -120,18 +152,20 @@ function showStory(storyId) {
     hideAllViews();
     document.getElementById('view-story').classList.remove('hidden');
     currentStoryId = storyId;
-    
+
     const story = db.find(s => s.id === storyId);
     const sortedChapters = story.chapters.slice().sort((a, b) => Number(a.chapter_number) - Number(b.chapter_number));
     currentStoryChapters = sortedChapters;
-    
+
+    const { total: totalViews } = getStoryViewStats(story);
+
     // Render Metadata
     document.getElementById('story-meta-container').innerHTML = `
         <div class="cover-wrapper">${buildCoverImgHtml(story.cover, 'meta')}</div>
         <div class="meta-info">
             <h1 class="story-title">${story.title}</h1>
             <p><strong>Tác giả:</strong> ${story.author}</p>
-            <p style="margin-top: 10px;"><strong>Tổng lượt xem:</strong> ${story.totalViews || 0} 👁️</p>
+            <p style="margin-top: 8px;"><span class="view-count"><i class='bx bx-show'></i> ${formatViews(totalViews)} lượt xem</span></p>
             <p style="margin-top: 15px; opacity: 0.8;">${story.description}</p>
         </div>
     `;
@@ -140,20 +174,14 @@ function showStory(storyId) {
     const chapList = document.getElementById('chapter-list-container');
     chapList.innerHTML = '';
     currentStoryChapters.forEach((chap, idx) => {
+        const views = Number(chap.views) || 0;
         chapList.innerHTML += `
             <div class="chap-item" onclick="readChapter(${idx})">
                 <span>${chap.title}</span>
-<<<<<<< Updated upstream
-                <span style="font-size:0.8rem; opacity:0.7;">${chap.views || 0} 👁️</span>
-                <i class='bx bx-book-open'></i>
-=======
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <span class="chap-meta">
+                    <span class="view-count"><i class='bx bx-show'></i> ${formatViews(views)}</span>
                     <i class='bx bx-book-open'></i>
-                    <span style="font-size:0.7rem; opacity:0.7; display: flex; align-items: center; gap: 2px;">
-                        ${chap.views || 0} <i class='bx bx-show'></i>
-                    </span>
-                </div>
->>>>>>> Stashed changes
+                </span>
             </div>
         `;
     });
@@ -166,13 +194,6 @@ function readChapter(idx) {
     
     const story = db.find(s => s.id === currentStoryId);
     const chapter = currentStoryChapters[idx];
-
-    // Update view count in memory
-    fetch(`${API_URL}/chapters/${chapter.id}`)
-        .then(res => res.json())
-        .then(data => {
-            chapter.views = data.views;
-        });
 
     document.getElementById('reading-title').innerText = chapter.title;
 
@@ -195,6 +216,35 @@ function readChapter(idx) {
 
     document.getElementById('btn-prev').disabled = (idx === 0);
     document.getElementById('btn-next').disabled = (idx === currentStoryChapters.length - 1);
+
+    incrementChapterView(chapter);
+}
+
+// Gọi API tăng lượt xem cho chương. Mỗi chương chỉ tăng 1 lần / phiên trình duyệt.
+async function incrementChapterView(chapter) {
+    if (!chapter || !chapter.id) return;
+    const key = `viewed_chapter_${chapter.id}`;
+    try {
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, '1');
+    } catch (e) {
+        // sessionStorage có thể bị chặn; vẫn cố gắng tăng view
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/chapters/${chapter.id}/view`, { method: 'POST' });
+        if (!res.ok) return;
+        const data = await res.json();
+        // Cập nhật cache cục bộ để UI phản ánh ngay
+        const story = db.find(s => s.id === currentStoryId);
+        if (story) {
+            const target = story.chapters.find(c => c.id === chapter.id);
+            if (target) target.views = data.views;
+        }
+        chapter.views = data.views;
+    } catch (e) {
+        console.error('Không thể tăng lượt xem', e);
+    }
 }
 
 function changeChapter(step) {

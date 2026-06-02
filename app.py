@@ -14,7 +14,8 @@ from database import (
     get_chapter as db_get_chapter,
     create_chapter,
     update_chapter as db_update_chapter,
-    delete_chapter as db_delete_chapter
+    delete_chapter as db_delete_chapter,
+    increment_chapter_view as db_increment_chapter_view
 )
 
 app = Flask(__name__)
@@ -209,6 +210,13 @@ def delete_chapter(chapter_id):
     if not success:
         return jsonify({'error': 'Unable to delete chapter'}), 500
     return jsonify({'message': 'Chapter deleted successfully'})
+
+@app.route('/api/chapters/<int:chapter_id>/view', methods=['POST'])
+def increment_chapter_view(chapter_id):
+    result = db_increment_chapter_view(chapter_id)
+    if not result:
+        return jsonify({'error': 'Chapter not found'}), 404
+    return jsonify(result)
 
 # Serve favicon directly
 @app.route('/favicon.ico')

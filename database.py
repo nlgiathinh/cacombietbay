@@ -172,6 +172,22 @@ def delete_chapter(chapter_id):
     return True
 
 
+def increment_chapter_view(chapter_id):
+    if SUPABASE_ENABLED and supa_db:
+        return supa_db.increment_chapter_view(chapter_id)
+
+    conn = get_db_connection()
+    row = conn.execute('SELECT id, views FROM chapters WHERE id = ?', (chapter_id,)).fetchone()
+    if not row:
+        conn.close()
+        return None
+    new_views = (row['views'] or 0) + 1
+    conn.execute('UPDATE chapters SET views = ? WHERE id = ?', (new_views, chapter_id))
+    conn.commit()
+    conn.close()
+    return {'id': chapter_id, 'views': new_views}
+
+
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -197,6 +213,7 @@ def init_db():
             chapter_number INTEGER NOT NULL,
             title TEXT,
             content TEXT, -- Can be text or a JSON string of image paths
+            views INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (story_id) REFERENCES stories (id) ON DELETE CASCADE
         )
