@@ -99,10 +99,12 @@ header {
 .book-card h3 { font-size: 1.2rem; color: var(--accent-color); font-weight: 700; margin-bottom: 8px; }
 .book-card p { font-size: 0.9rem; opacity: 0.8; }
 .book-card .story-card-title {
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-    overflow: hidden; line-height: 1.35; min-height: calc(1.2rem * 1.35 * 2);
+    display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; text-overflow: ellipsis;
+    line-height: 1.35; height: calc(1.2rem * 1.35 * 2);
+    word-break: break-word;
 }
-.book-card .chapter-count { margin-top: auto; }
+.book-card .chapter-count { margin-top: auto; padding-top: 8px; }
 
 /* Metadata truyện */
 .story-meta { display: flex; gap: 30px; margin-bottom: 40px; background: var(--ui-bg); padding: 30px; border-radius: 20px; border: 1px solid var(--ui-border); }
@@ -127,53 +129,40 @@ header {
 .btn-nav:disabled { background: var(--ui-border); cursor: not-allowed; color: var(--text-color); }
 
 /* =========================================
-   6. HOT FLAME & VIEW COUNT
+   6. HOT BADGE & VIEW COUNT
    ========================================= */
 .book-card .cover-wrapper { position: relative; }
 
-.hot-flame {
-    position: absolute; top: 10px; right: 10px;
-    width: 40px; height: 44px;
-    display: inline-flex; align-items: center; justify-content: center;
+.hot-badge {
+    position: absolute; top: 8px; right: 8px;
+    padding: 3px 9px;
+    background: linear-gradient(135deg, #ff7a18 0%, #ff3d00 55%, #d50000 100%);
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(213, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+    overflow: hidden;
     z-index: 2; pointer-events: none;
 }
-.hot-flame > i {
-    font-size: 2rem;
-    background: linear-gradient(180deg, #fff2a8 0%, #ffb547 35%, #ff5722 75%, #c62828 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    filter: drop-shadow(0 0 6px rgba(255, 138, 0, 0.75))
-            drop-shadow(0 0 14px rgba(255, 60, 0, 0.55));
-    animation: hot-flame-flicker 1.4s ease-in-out infinite;
-    transform-origin: 50% 90%;
+.hot-badge-text {
+    position: relative; z-index: 1;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800; font-size: 0.65rem; letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
 }
-@keyframes hot-flame-flicker {
-    0%   { transform: scale(1, 1)       skewX(0deg);  filter: drop-shadow(0 0 6px rgba(255, 138, 0, 0.75))  drop-shadow(0 0 14px rgba(255, 60, 0, 0.55)); }
-    25%  { transform: scale(1.06, 1.12) skewX(-3deg); filter: drop-shadow(0 0 9px rgba(255, 170, 40, 0.95)) drop-shadow(0 0 18px rgba(255, 80, 0, 0.7)); }
-    50%  { transform: scale(0.97, 1.04) skewX(2deg);  filter: drop-shadow(0 0 7px rgba(255, 150, 20, 0.85)) drop-shadow(0 0 16px rgba(255, 70, 0, 0.6)); }
-    75%  { transform: scale(1.04, 1.1)  skewX(-2deg); filter: drop-shadow(0 0 10px rgba(255, 190, 60, 1))   drop-shadow(0 0 20px rgba(255, 90, 0, 0.75)); }
-    100% { transform: scale(1, 1)       skewX(0deg);  filter: drop-shadow(0 0 6px rgba(255, 138, 0, 0.75))  drop-shadow(0 0 14px rgba(255, 60, 0, 0.55)); }
+.hot-badge::before {
+    content: ''; position: absolute; top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(110deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.55) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    transform: skewX(-20deg);
+    animation: hot-badge-shine 2.6s ease-in-out infinite;
 }
-
-.hot-ember {
-    position: absolute;
-    width: 5px; height: 5px;
-    background: radial-gradient(circle, #fff4b8 0%, #ffa040 50%, rgba(255, 80, 0, 0) 75%);
-    border-radius: 50%;
-    opacity: 0;
-    animation: hot-ember-rise 2.2s ease-in infinite;
-}
-.hot-ember-1 { left: 50%; bottom: 4px;  animation-delay: 0s;   }
-.hot-ember-2 { left: 30%; bottom: 8px;  animation-delay: 0.7s; width: 4px; height: 4px; }
-.hot-ember-3 { left: 70%; bottom: 6px;  animation-delay: 1.3s; width: 3px; height: 3px; }
-
-@keyframes hot-ember-rise {
-    0%   { opacity: 0;   transform: translate(-50%, 0)     scale(0.6); }
-    20%  { opacity: 1;   transform: translate(-50%, -8px)  scale(1);   }
-    70%  { opacity: 0.7; transform: translate(-50%, -22px) scale(0.8); }
-    100% { opacity: 0;   transform: translate(-50%, -34px) scale(0.3); }
+@keyframes hot-badge-shine {
+    0%   { left: -60%; }
+    60%  { left: 120%; }
+    100% { left: 120%; }
 }
 .view-count {
     display: inline-flex; align-items: center; gap: 4px;
