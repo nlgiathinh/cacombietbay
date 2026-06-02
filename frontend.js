@@ -127,11 +127,11 @@ function showHome() {
 
             const { total: totalViews } = getStoryViewStats(story);
             const hotBadge = hotIds.has(story.id)
-                ? `<span class="hot-star" title="Truyện nổi bật">
-                       <i class='bx bxs-star'></i>
-                       <span class="hot-spark hot-spark-1"></span>
-                       <span class="hot-spark hot-spark-2"></span>
-                       <span class="hot-spark hot-spark-3"></span>
+                ? `<span class="hot-flame" title="Truyện nổi bật">
+                       <i class='bx bxs-flame'></i>
+                       <span class="hot-ember hot-ember-1"></span>
+                       <span class="hot-ember hot-ember-2"></span>
+                       <span class="hot-ember hot-ember-3"></span>
                    </span>`
                 : '';
 

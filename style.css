@@ -127,46 +127,53 @@ header {
 .btn-nav:disabled { background: var(--ui-border); cursor: not-allowed; color: var(--text-color); }
 
 /* =========================================
-   6. HOT STAR & VIEW COUNT
+   6. HOT FLAME & VIEW COUNT
    ========================================= */
 .book-card .cover-wrapper { position: relative; }
 
-.hot-star {
-    position: absolute; top: 10px; left: 10px;
-    width: 38px; height: 38px;
+.hot-flame {
+    position: absolute; top: 10px; right: 10px;
+    width: 40px; height: 44px;
     display: inline-flex; align-items: center; justify-content: center;
     z-index: 2; pointer-events: none;
 }
-.hot-star > i {
-    font-size: 1.9rem;
-    color: #ffd84d;
-    filter: drop-shadow(0 0 6px rgba(255, 216, 77, 0.85))
-            drop-shadow(0 0 12px rgba(255, 196, 0, 0.55));
-    animation: hot-star-pulse 1.8s ease-in-out infinite;
-    transform-origin: center;
+.hot-flame > i {
+    font-size: 2rem;
+    background: linear-gradient(180deg, #fff2a8 0%, #ffb547 35%, #ff5722 75%, #c62828 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 6px rgba(255, 138, 0, 0.75))
+            drop-shadow(0 0 14px rgba(255, 60, 0, 0.55));
+    animation: hot-flame-flicker 1.4s ease-in-out infinite;
+    transform-origin: 50% 90%;
 }
-@keyframes hot-star-pulse {
-    0%, 100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 6px rgba(255, 216, 77, 0.85)) drop-shadow(0 0 12px rgba(255, 196, 0, 0.45)); }
-    50%      { transform: scale(1.15) rotate(8deg); filter: drop-shadow(0 0 10px rgba(255, 230, 120, 1)) drop-shadow(0 0 20px rgba(255, 196, 0, 0.7)); }
+@keyframes hot-flame-flicker {
+    0%   { transform: scale(1, 1)       skewX(0deg);  filter: drop-shadow(0 0 6px rgba(255, 138, 0, 0.75))  drop-shadow(0 0 14px rgba(255, 60, 0, 0.55)); }
+    25%  { transform: scale(1.06, 1.12) skewX(-3deg); filter: drop-shadow(0 0 9px rgba(255, 170, 40, 0.95)) drop-shadow(0 0 18px rgba(255, 80, 0, 0.7)); }
+    50%  { transform: scale(0.97, 1.04) skewX(2deg);  filter: drop-shadow(0 0 7px rgba(255, 150, 20, 0.85)) drop-shadow(0 0 16px rgba(255, 70, 0, 0.6)); }
+    75%  { transform: scale(1.04, 1.1)  skewX(-2deg); filter: drop-shadow(0 0 10px rgba(255, 190, 60, 1))   drop-shadow(0 0 20px rgba(255, 90, 0, 0.75)); }
+    100% { transform: scale(1, 1)       skewX(0deg);  filter: drop-shadow(0 0 6px rgba(255, 138, 0, 0.75))  drop-shadow(0 0 14px rgba(255, 60, 0, 0.55)); }
 }
 
-.hot-spark {
+.hot-ember {
     position: absolute;
-    width: 6px; height: 6px;
-    background: radial-gradient(circle, #fff 0%, #fff7c2 40%, rgba(255, 247, 194, 0) 70%);
+    width: 5px; height: 5px;
+    background: radial-gradient(circle, #fff4b8 0%, #ffa040 50%, rgba(255, 80, 0, 0) 75%);
     border-radius: 50%;
     opacity: 0;
-    animation: hot-spark-twinkle 2.4s ease-in-out infinite;
+    animation: hot-ember-rise 2.2s ease-in infinite;
 }
-.hot-spark-1 { top: 2px;  right: 2px;  animation-delay: 0s; }
-.hot-spark-2 { bottom: 4px; left: 0px;  width: 4px; height: 4px; animation-delay: 0.7s; }
-.hot-spark-3 { top: 12px; left: -4px;  width: 5px; height: 5px; animation-delay: 1.3s; }
+.hot-ember-1 { left: 50%; bottom: 4px;  animation-delay: 0s;   }
+.hot-ember-2 { left: 30%; bottom: 8px;  animation-delay: 0.7s; width: 4px; height: 4px; }
+.hot-ember-3 { left: 70%; bottom: 6px;  animation-delay: 1.3s; width: 3px; height: 3px; }
 
-@keyframes hot-spark-twinkle {
-    0%, 100% { opacity: 0; transform: scale(0.4); }
-    40%      { opacity: 1; transform: scale(1.2); }
-    60%      { opacity: 0.8; transform: scale(1); }
-    80%      { opacity: 0; transform: scale(0.5); }
+@keyframes hot-ember-rise {
+    0%   { opacity: 0;   transform: translate(-50%, 0)     scale(0.6); }
+    20%  { opacity: 1;   transform: translate(-50%, -8px)  scale(1);   }
+    70%  { opacity: 0.7; transform: translate(-50%, -22px) scale(0.8); }
+    100% { opacity: 0;   transform: translate(-50%, -34px) scale(0.3); }
 }
 .view-count {
     display: inline-flex; align-items: center; gap: 4px;
