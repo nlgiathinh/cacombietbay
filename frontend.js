@@ -64,6 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     description: story.description,
                     status: story.status || 'ongoing',
                     is_hot: story.is_hot || false,
+                    totalViews: story.totalViews || 0,
                     chapters: chapters
                 });
             }
@@ -130,6 +131,7 @@ function showStory(storyId) {
         <div class="meta-info">
             <h1 class="story-title">${story.title}</h1>
             <p><strong>Tác giả:</strong> ${story.author}</p>
+            <p style="margin-top: 10px;"><strong>Tổng lượt xem:</strong> ${story.totalViews || 0} 👁️</p>
             <p style="margin-top: 15px; opacity: 0.8;">${story.description}</p>
         </div>
     `;
@@ -141,7 +143,7 @@ function showStory(storyId) {
         chapList.innerHTML += `
             <div class="chap-item" onclick="readChapter(${idx})">
                 <span>${chap.title}</span>
-                <span style="font-size:0.7rem; opacity:0.6;">(${chap.views || 0} views)</span>
+                <span style="font-size:0.8rem; opacity:0.7;">${chap.views || 0} 👁️</span>
                 <i class='bx bx-book-open'></i>
             </div>
         `;
@@ -155,6 +157,13 @@ function readChapter(idx) {
     
     const story = db.find(s => s.id === currentStoryId);
     const chapter = currentStoryChapters[idx];
+
+    // Update view count in memory
+    fetch(`${API_URL}/chapters/${chapter.id}`)
+        .then(res => res.json())
+        .then(data => {
+            chapter.views = data.views;
+        });
 
     document.getElementById('reading-title').innerText = chapter.title;
 

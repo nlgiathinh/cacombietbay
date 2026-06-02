@@ -32,13 +32,11 @@ module.exports = async (req, res) => {
 
       const storyStats = stories.map(story => {
         const storyChapters = chapters.filter(c => c.story_id === story.id);
-        const avgViews = storyChapters.length > 0 
-          ? storyChapters.reduce((acc, c) => acc + (c.views || 0), 0) / storyChapters.length 
-          : 0;
-        return { ...story, avgViews };
+        const totalViews = storyChapters.reduce((acc, c) => acc + (c.views || 0), 0);
+        const avgViews = storyChapters.length > 0 ? totalViews / storyChapters.length : 0;
+        return { ...story, avgViews, totalViews };
       });
 
-      const hotThreshold = 10; // Example threshold
       const ongoingStories = storyStats.filter(s => s.status === 'ongoing');
       const hotStories = ongoingStories
         .sort((a, b) => b.avgViews - a.avgViews)
@@ -48,6 +46,7 @@ module.exports = async (req, res) => {
       return res.status(200).json(storyStats.map(s => ({
         ...serializeStory(s),
         avgViews: s.avgViews,
+        totalViews: s.totalViews,
         is_hot: hotStories.includes(s.id)
       })));
     }

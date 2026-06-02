@@ -19,12 +19,13 @@ module.exports = async (req, res) => {
       }
 
       // Increment view count
+      const newViews = (data.views || 0) + 1;
       await supabase
         .from('chapters')
-        .update({ views: (data.views || 0) + 1 })
+        .update({ views: newViews })
         .eq('id', chapterId);
 
-      return res.status(200).json(data);
+      return res.status(200).json({ ...data, views: newViews });
     }
 
     if (req.method === 'PUT' && parts.length === 1) {
