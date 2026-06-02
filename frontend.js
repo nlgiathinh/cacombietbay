@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     cover: story.cover_path ? story.cover_path : 'logo.png',
                     description: story.description,
                     status: story.status || 'ongoing',
+                    is_hot: story.is_hot || false,
                     chapters: chapters
                 });
             }
@@ -101,6 +102,7 @@ function showHome() {
 
             grid.innerHTML += `
                 <div class="book-card" onclick="showStory('${story.id}')">
+                    ${story.is_hot ? '<div class="hot-badge" style="background:red; color:white; padding:2px 5px; font-size:0.7rem; position:absolute; top:5px; left:5px;">HOT</div>' : ''}
                     <div class="cover-wrapper">${buildCoverImgHtml(story.cover, 'thumb')}</div>
                     <h3 class="story-card-title">${story.title}</h3>
                     <p>Tác giả: ${story.author}</p>
@@ -139,6 +141,7 @@ function showStory(storyId) {
         chapList.innerHTML += `
             <div class="chap-item" onclick="readChapter(${idx})">
                 <span>${chap.title}</span>
+                <span style="font-size:0.7rem; opacity:0.6;">(${chap.views || 0} views)</span>
                 <i class='bx bx-book-open'></i>
             </div>
         `;

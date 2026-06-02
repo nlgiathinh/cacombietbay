@@ -17,6 +17,13 @@ module.exports = async (req, res) => {
       if (error) {
         return res.status(404).json({ error: 'Chapter not found' });
       }
+
+      // Increment view count
+      await supabase
+        .from('chapters')
+        .update({ views: (data.views || 0) + 1 })
+        .eq('id', chapterId);
+
       return res.status(200).json(data);
     }
 
